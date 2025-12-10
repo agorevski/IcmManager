@@ -9,7 +9,7 @@ This utility monitors Xbox-related subreddits to detect user-reported issues and
 ## Features
 
 - **Reddit Monitoring**: Tracks new and trending posts from Xbox subreddits
-- **LLM-Powered Analysis**: Uses Azure OpenAI (GPT-5.1) to detect issues from post content
+- **LLM-Powered Analysis**: Uses Azure OpenAI to detect issues from post content
 - **Automatic ICM Creation**: Creates tickets for Microsoft investigation
 - **Duplicate Detection**: Avoids creating duplicate ICMs for the same issue
 - **Post Tracking**: Remembers analyzed posts to avoid reprocessing
@@ -42,15 +42,27 @@ All components are interface-based, allowing implementations to be swapped.
 
 ```
 IcmManager/
+├── .github/
+│   └── workflows/        # GitHub Actions CI/CD
+│       └── tests.yml     # Test and lint workflow
 ├── src/
 │   ├── models/           # Data models (RedditPost, IssueAnalysis, etc.)
 │   ├── interfaces/       # Abstract interfaces
 │   ├── analyzers/        # LLM analyzer implementations
+│   │   ├── azure_openai_analyzer.py
+│   │   └── prompts.yaml  # LLM prompts (editable without code changes)
 │   ├── tracking/         # Post tracker implementations
 │   ├── logging/          # LLM logging
 │   ├── pipeline/         # Main pipeline orchestrator
 │   └── config.py         # Configuration management
-├── tests/                # Unit tests
+├── tests/
+│   ├── test_assets/      # Test fixture data (JSON)
+│   ├── conftest.py       # Pytest fixtures and mocks
+│   ├── test_models.py    # Data model tests
+│   ├── test_tracker.py   # Post tracker tests
+│   ├── test_pipeline.py  # Pipeline orchestrator tests
+│   ├── test_e2e_classification.py  # E2E tests with real Azure OpenAI
+│   └── .env.example      # Example test environment config
 ├── logs/                 # LLM interaction logs
 ├── data/                 # SQLite database
 ├── requirements.txt
@@ -83,14 +95,32 @@ AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/
 AZURE_OPENAI_API_KEY=your-api-key-here
 AZURE_OPENAI_API_VERSION=2024-02-01
 AZURE_OPENAI_DEPLOYMENT=gpt-5.1
+AZURE_OPENAI_MAX_TOKENS=1000
+AZURE_OPENAI_TEMPERATURE=0.1
+
+# Storage Configuration
+ICM_DATA_DIR=data
+ICM_LOGS_DIR=logs
+ICM_DB_FILENAME=post_tracker.db
 
 # Pipeline Settings
 ICM_SUBREDDITS=xbox,xboxone,XboxSeriesX
+ICM_POSTS_PER_SUBREDDIT=100
+ICM_TIME_FILTER=hour
 ICM_MIN_CONFIDENCE=0.7
 ICM_MIN_SEVERITY=medium
+ICM_INCLUDE_RISING=true
+ICM_INCLUDE_HOT=true
+ICM_SKIP_LOW_ENGAGEMENT=false
+ICM_MIN_SCORE=0
+ICM_MIN_COMMENTS=0
+
+# Logging
+ICM_LOG_TO_CONSOLE=true
+ICM_LOG_LEVEL=INFO
 ```
 
-See `src/config.py` for all available configuration options.
+See `src/config.py` for all available configuration options and their defaults.
 
 ## Usage
 
@@ -204,6 +234,8 @@ class MyICMManager(IICMManager):
 
 ## Testing
 
+### Running Unit Tests
+
 ```bash
 # Run all tests
 pytest
@@ -217,6 +249,37 @@ pytest tests/test_pipeline.py
 # Run specific test
 pytest tests/test_pipeline.py::TestIssueDetectorPipeline::test_run_detects_issue_and_creates_icm
 ```
+
+### Running End-to-End Tests
+
+E2E tests use real Azure OpenAI to verify classification accuracy. They require valid credentials:
+
+```bash
+# Copy the example env file and fill in your credentials
+cp tests/.env.example tests/.env
+# Edit tests/.env with your Azure OpenAI credentials
+
+# Run E2E tests
+pytest tests/test_e2e_classification.py -v
+```
+
+E2E tests will be automatically skipped if Azure credentials are not configured.
+
+### Test Assets
+
+Sample Reddit post data for testing is stored in `tests/test_assets/`:
+- `icm_worthy_xbox_live_signin.json` - An outage post that should trigger ICM creation
+- `non_icm_worthy_storage_question.json` - A question post that should not trigger ICM creation
+
+## CI/CD
+
+The project uses GitHub Actions for continuous integration. The workflow (`.github/workflows/tests.yml`) runs:
+
+- **Tests**: Runs the full pytest suite across Python 3.10, 3.11, 3.12, and 3.13
+- **Coverage**: Generates and uploads test coverage reports to Codecov
+- **Linting**: Checks code quality with ruff (non-blocking)
+
+The workflow runs on push/PR to `main`, `master`, and `develop` branches.
 
 ## Issue Categories
 

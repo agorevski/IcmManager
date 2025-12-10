@@ -2,8 +2,10 @@
 
 import json
 import time
+from pathlib import Path
 from typing import List, Optional
 
+import yaml
 from openai import AzureOpenAI
 
 from src.interfaces.llm_analyzer import ILLMAnalyzer
@@ -11,81 +13,34 @@ from src.models.reddit_data import RedditPost
 from src.models.issue import IssueAnalysis, ICMIssue, IssueCategory, Severity
 from src.logging.llm_logger import LLMLogger
 
-# System prompt for issue detection
-SYSTEM_PROMPT = """You are an expert analyst for Xbox platform issues. Your task is to analyze Reddit posts and comments from Xbox-related subreddits to detect if users are experiencing technical issues, bugs, or problems with Xbox services.
+# Path to the prompts YAML file
+PROMPTS_FILE = Path(__file__).parent / "prompts.yaml"
 
-Analyze the post title, body, and comments to determine:
-1. Is there a genuine technical issue being reported (not just a question, discussion, or feature request)?
-2. What category does the issue fall into?
-3. How severe is the issue?
-4. How many users appear to be affected (based on comments and engagement)?
 
-Categories:
-- connectivity: Network, Xbox Live, online gaming issues
-- performance: Lag, frame drops, slow loading
-- game_crash: Games crashing, freezing, not launching
-- account: Sign-in, profile, account-related issues
-- purchase: Store, payment, subscription issues
-- update: System update, game update problems
-- hardware: Controller, console hardware issues
-- game_pass: Game Pass specific issues
-- cloud_gaming: Cloud gaming/streaming issues
-- social: Friends list, party chat, messaging issues
-- other: Issues that don't fit other categories
-
-Severity levels:
-- low: Minor inconvenience, workaround available
-- medium: Significant impact but not blocking
-- high: Major functionality broken
-- critical: Widespread outage or data loss
-
-Respond ONLY with valid JSON in this exact format:
-{
-    "is_issue": true/false,
-    "confidence": 0.0-1.0,
-    "summary": "Brief description of the issue",
-    "category": "category_name",
-    "severity": "severity_level",
-    "affected_users_estimate": number,
-    "keywords": ["keyword1", "keyword2"]
-}
-
-If no issue is detected, set is_issue to false and provide minimal other fields."""
-
-DUPLICATE_CHECK_PROMPT = """You are comparing a newly detected issue with existing ICM tickets to determine if they are duplicates.
-
-A duplicate means the issues are about the same underlying problem, even if described differently.
-
-Consider:
-- Similar error messages or symptoms
-- Same affected services or features
-- Same category of issue
-- Similar timeframe
-
-New Issue:
-{new_issue}
-
-Existing Issues:
-{existing_issues}
-
-Respond with ONLY valid JSON:
-{
-    "is_duplicate": true/false,
-    "matching_icm_id": "id or null",
-    "confidence": 0.0-1.0,
-    "reason": "Brief explanation"
-}"""
+def load_prompts(prompts_file: Path = PROMPTS_FILE) -> dict:
+    """Load prompts from the YAML file.
+    
+    Args:
+        prompts_file: Path to the prompts YAML file.
+        
+    Returns:
+        Dictionary containing the prompts.
+    """
+    with open(prompts_file, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f)
 
 
 class AzureOpenAIAnalyzer(ILLMAnalyzer):
     """Azure OpenAI-based implementation for analyzing Reddit posts.
     
     Uses Azure OpenAI's GPT models to analyze posts and detect issues.
+    Prompts are loaded from prompts.yaml for easy customization.
     
     Attributes:
         client: Azure OpenAI client instance.
         model: Model deployment name to use.
         logger: LLM logger for tracking requests/responses.
+        prompts: Dictionary containing loaded prompts.
     """
 
     def __init__(
@@ -96,7 +51,8 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
         deployment_name: str = "gpt-5.1",
         logger: Optional[LLMLogger] = None,
         max_tokens: int = 1000,
-        temperature: float = 0.1
+        temperature: float = 0.1,
+        prompts_file: Optional[Path] = None
     ):
         """Initialize the Azure OpenAI analyzer.
         
@@ -108,6 +64,7 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
             logger: Optional LLM logger instance.
             max_tokens: Maximum tokens for responses.
             temperature: Temperature for generation (lower = more deterministic).
+            prompts_file: Optional path to prompts YAML file.
         """
         self.client = AzureOpenAI(
             azure_endpoint=azure_endpoint,
@@ -118,6 +75,11 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
         self.logger = logger or LLMLogger()
         self.max_tokens = max_tokens
         self.temperature = temperature
+        
+        # Load prompts from YAML file
+        self.prompts = load_prompts(prompts_file or PROMPTS_FILE)
+        self.system_prompt = self.prompts["system_prompt"]
+        self.duplicate_check_prompt_template = self.prompts["duplicate_check_prompt"]
 
     def analyze_post(self, post: RedditPost) -> IssueAnalysis:
         """Analyze a Reddit post and its comments to detect issues."""
@@ -131,7 +93,7 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
             request_id=request_id,
             model=self.model,
             prompt=user_content,
-            context={"system_prompt": SYSTEM_PROMPT},
+            context={"system_prompt": self.system_prompt},
             post_id=post.id,
             subreddit=post.subreddit,
         )
@@ -142,10 +104,10 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
             response = self.client.chat.completions.create(
                 model=self.model,
                 messages=[
-                    {"role": "system", "content": SYSTEM_PROMPT},
+                    {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": user_content},
                 ],
-                max_tokens=self.max_tokens,
+                max_completion_tokens=self.max_tokens,
                 temperature=self.temperature,
                 response_format={"type": "json_object"},
             )
@@ -223,7 +185,7 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
             for issue in existing_issues[:20]  # Limit to recent issues
         ], indent=2)
         
-        prompt = DUPLICATE_CHECK_PROMPT.format(
+        prompt = self.duplicate_check_prompt_template.format(
             new_issue=new_issue_str,
             existing_issues=existing_issues_str,
         )
@@ -243,8 +205,8 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
                 messages=[
                     {"role": "user", "content": prompt},
                 ],
-                max_tokens=500,
-                temperature=0.1,
+                max_completion_tokens=self.max_tokens,
+                temperature=self.temperature,
                 response_format={"type": "json_object"},
             )
             

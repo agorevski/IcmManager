@@ -1,0 +1,77 @@
+{
+  "id": "storage_expansion_question_001",
+  "subreddit": "XboxSupport",
+  "title": "What is the most worth it storage expansion for series x?",
+  "body": "I wanna know what most of you series x users use for storage expansion and what will be the most recommended nowadays for 1 tb expansion? Wether it's expansion card, external ssd, sata ssd with adapter or even hdd",
+  "author": "Plastic-Spell-9508",
+  "created_utc": "2024-12-10T08:00:00",
+  "url": "https://reddit.com/r/XboxSupport/comments/storage_expansion_question_001",
+  "score": 4,
+  "num_comments": 18,
+  "flair": null,
+  "comments": [
+    {
+      "id": "c1",
+      "post_id": "storage_expansion_question_001",
+      "body": "The official Seagate Expansion Card is the way to go. It supports all games made for the XBox Series S | X. If you only want storage for legacy titles, XBox 360 titles, etc., you can plug in an external USB drive and run them from there.",
+      "author": "StorminXX",
+      "created_utc": "2024-12-10T08:10:00",
+      "score": 6,
+      "parent_id": null
+    },
+    {
+      "id": "c2",
+      "post_id": "storage_expansion_question_001",
+      "body": "Mostly X|S games and wouldn't mind transferring data but I feel nowadays after the ssds price increase that reliable ssds caught up to the price of expansion cards",
+      "author": "Plastic-Spell-9508",
+      "created_utc": "2024-12-10T08:15:00",
+      "score": 2,
+      "parent_id": "c1"
+    },
+    {
+      "id": "c3",
+      "post_id": "storage_expansion_question_001",
+      "body": "I use the 1TB expansion card from Seagate, I really wish i could fork over the caps to get myself the 4TB one, but sheesh that price is wild",
+      "author": "Lonely_Dovah",
+      "created_utc": "2024-12-10T08:20:00",
+      "score": 5,
+      "parent_id": null
+    },
+    {
+      "id": "c4",
+      "post_id": "storage_expansion_question_001",
+      "body": "I use the Seagate 2TB expansion card. I would still like to buy the 4TB one. But its price is high.",
+      "author": "Natanael_155",
+      "created_utc": "2024-12-10T08:25:00",
+      "score": 2,
+      "parent_id": null
+    },
+    {
+      "id": "c5",
+      "post_id": "storage_expansion_question_001",
+      "body": "At that point you would be better adding a 4 tb hdd maybe",
+      "author": "Plastic-Spell-9508",
+      "created_utc": "2024-12-10T08:30:00",
+      "score": 1,
+      "parent_id": "c4"
+    },
+    {
+      "id": "c6",
+      "post_id": "storage_expansion_question_001",
+      "body": "And if it's ssd what would be the best pick now, given that the usb port it usb 3.0 and would bottleneck expensive highend ssds and make them pointless.",
+      "author": "Plastic-Spell-9508",
+      "created_utc": "2024-12-10T08:35:00",
+      "score": 3,
+      "parent_id": null
+    },
+    {
+      "id": "c7",
+      "post_id": "storage_expansion_question_001",
+      "body": "Just double checking ... you know that USB anything won't be able to play Series X|S optimized games, right? Cheapest would probably be a USB HDD though.",
+      "author": "modemman11",
+      "created_utc": "2024-12-10T08:40:00",
+      "score": 0,
+      "parent_id": "c6"
+    }
+  ]
+}

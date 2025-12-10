@@ -18,11 +18,12 @@ This is an automated issue detection utility that monitors Xbox-related Reddit s
 - `src/logging/` - Logging utilities
 - `src/pipeline/` - Orchestration logic
 - `tests/` - Unit tests with pytest
+- `tests/test_assets/` - JSON fixtures for testing (sample Reddit posts)
 
 ## Coding Standards
 
 ### Python Conventions
-- Use Python 3.10+ features
+- Use Python 3.10+ features (tested on 3.10, 3.11, 3.12, 3.13)
 - Use dataclasses for data models
 - Use type hints for all function signatures
 - Use docstrings for all public classes and methods
@@ -38,6 +39,8 @@ This is an automated issue detection utility that monitors Xbox-related Reddit s
 - Use pytest fixtures from `tests/conftest.py`
 - Mock external dependencies (Reddit API, Azure OpenAI, ICM API)
 - Tests should pass before committing
+- E2E tests in `test_e2e_classification.py` require Azure OpenAI credentials
+- Test assets go in `tests/test_assets/` as JSON files
 
 ## Key Files to Know
 
@@ -47,11 +50,22 @@ This is an automated issue detection utility that monitors Xbox-related Reddit s
 
 ### Data Models
 - `src/models/reddit_data.py` - RedditPost, RedditComment
-- `src/models/issue.py` - IssueAnalysis, ICMIssue, AnalyzedPost
+- `src/models/issue.py` - IssueAnalysis, ICMIssue, AnalyzedPost, Severity, IssueCategory enums
 
 ### Implementations
 - `src/analyzers/azure_openai_analyzer.py` - LLM analyzer (uses prompts.yaml)
+- `src/analyzers/prompts.yaml` - LLM prompts (system_prompt, duplicate_check_prompt)
 - `src/tracking/sqlite_tracker.py` - SQLite-based post tracker
+- `src/logging/llm_logger.py` - LLM request/response logging
+
+### Testing
+- `tests/conftest.py` - Shared fixtures and mock implementations
+- `tests/test_e2e_classification.py` - End-to-end tests with real Azure OpenAI
+- `tests/test_assets/` - Sample Reddit post JSON files for testing
+- `tests/.env.example` - Example environment file for e2e tests
+
+### CI/CD
+- `.github/workflows/tests.yml` - GitHub Actions workflow for tests and linting
 
 ## Common Tasks
 
@@ -69,8 +83,21 @@ This is an automated issue detection utility that monitors Xbox-related Reddit s
 2. Update prompts in `src/analyzers/prompts.yaml`
 3. Update tests accordingly
 
+### Adding a Test Asset
+1. Create a JSON file in `tests/test_assets/`
+2. Use `RedditPost.from_dict()` to load in tests
+3. Reference in `test_e2e_classification.py` or other tests
+
+### Running E2E Tests
+1. Copy `tests/.env.example` to `tests/.env`
+2. Fill in Azure OpenAI credentials
+3. Run `pytest tests/test_e2e_classification.py -v`
+4. Tests auto-skip if credentials not configured
+
 ## Dependencies
 - `openai` - Azure OpenAI client
 - `pyyaml` - YAML parsing for prompts
+- `python-dotenv` - Loading .env files for configuration
 - `pytest` - Testing framework
 - `pytest-cov` - Coverage reporting
+- `ruff` - Linting (used in CI, optional locally)
