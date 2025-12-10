@@ -1,0 +1,89 @@
+# Prompts for automated prompt optimization
+# These prompts are used by the PromptOptimizer to analyze failures and generate suggestions
+
+analysis_prompt: |
+  Analyze the following evaluation failures from an Xbox issue detection system.
+  The system analyzes Reddit posts to detect technical issues with Xbox services.
+
+  Failures:
+  {failures}
+
+  Current F1 Score: {f1_score}
+  Precision: {precision}
+  Recall: {recall}
+
+  Identify:
+  1. Common patterns in the failures (false positives, false negatives, category errors, severity errors)
+  2. Categories that are frequently confused with each other
+  3. Severity assessment issues (over/under estimating)
+  4. Whether the prompt is too sensitive (high FP) or not sensitive enough (high FN)
+
+  Respond with a structured JSON analysis:
+  {
+    "patterns": ["pattern1", "pattern2", ...],
+    "confused_categories": [{"expected": "cat1", "predicted": "cat2", "count": N}, ...],
+    "severity_issues": ["issue1", "issue2", ...],
+    "sensitivity_assessment": "too_sensitive" | "not_sensitive_enough" | "balanced"
+  }
+
+suggestion_prompt: |
+  Based on the following analysis of failures in an Xbox issue detection prompt,
+  suggest specific improvements to the prompt.
+
+  Current System Prompt:
+  {current_prompt}
+
+  Failure Analysis:
+  {analysis}
+
+  Generate specific, actionable suggestions to improve the prompt's performance.
+  Each suggestion should:
+  1. Address a specific failure pattern
+  2. Include the exact text that should be added or modified
+  3. Explain why this change would help
+
+  Respond with JSON:
+  {
+    "suggestions": [
+      {
+        "type": "category_clarification" | "severity_calibration" | "sensitivity_adjustment" | "example_addition",
+        "description": "Brief description",
+        "current_text": "Text to replace (if applicable)",
+        "suggested_text": "New or modified text",
+        "rationale": "Why this helps",
+        "confidence": 0.0-1.0
+      }
+    ]
+  }
+
+category_refinement_prompt: |
+  The following categories are being confused by the issue detection system:
+  {confusion_pairs}
+
+  Current category definitions:
+  {category_definitions}
+
+  Suggest clearer, more distinct definitions for these categories that will
+  reduce confusion. Consider:
+  1. Providing concrete examples for each category
+  2. Explicitly stating what does NOT belong in each category
+  3. Adding decision criteria for borderline cases
+
+  Respond with improved definitions in JSON format.
+
+severity_calibration_prompt: |
+  The issue detection system is incorrectly assessing severity levels.
+  
+  Errors:
+  {severity_errors}
+
+  Current severity definitions:
+  {severity_definitions}
+
+  Suggest improved severity criteria that will lead to more accurate assessments.
+  Consider:
+  1. Concrete thresholds (e.g., user count, upvotes)
+  2. Clear differentiation between adjacent levels
+  3. Examples for each severity level
+
+  Respond with improved severity definitions in JSON format.

@@ -1,0 +1,436 @@
+{
+  "version": "1.0",
+  "description": "Golden test set for Xbox issue classification",
+  "created_at": "2024-01-15T00:00:00Z",
+  "confidence_threshold": 0.7,
+  "test_cases": [
+    {
+      "test_case_id": "tc_001_xbox_live_signin_outage",
+      "description": "Clear Xbox Live sign-in outage affecting many users - should be classified as critical connectivity/account issue",
+      "expected_is_issue": true,
+      "expected_category": "connectivity",
+      "expected_severity": "critical",
+      "expected_min_confidence": 0.8,
+      "edge_case_type": null,
+      "post": {
+        "id": "xbox_live_signin_outage_001",
+        "subreddit": "xbox",
+        "title": "Can't sign in to Xbox Live. Anyone else having this issue?",
+        "body": "Just got home a few minutes ago and turned on my Series X. It took 2-4 minutes to attempt to sign me in, but then it didn't sign me in. So my Xbox was logged into a signed out state. I tried to log in to Xbox Live again and it didn't work. Anyone else having problems?",
+        "author": "EliteFireBox",
+        "created_utc": "2024-01-15T18:00:00",
+        "url": "https://reddit.com/r/xbox/comments/xbox_live_signin_outage_001",
+        "score": 510,
+        "num_comments": 820,
+        "flair": "solved!",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "xbox_live_signin_outage_001",
+            "body": "Goddamn, Xbox is having troubles",
+            "author": "VX_420",
+            "created_utc": "2024-01-15T18:05:00",
+            "score": 19,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "xbox_live_signin_outage_001",
+            "body": "They have a website to see the status https://support.xbox.com/en-GB/xbox-live-status",
+            "author": "Unhappy_Mix_3873",
+            "created_utc": "2024-01-15T18:10:00",
+            "score": 9,
+            "parent_id": null
+          },
+          {
+            "id": "c3",
+            "post_id": "xbox_live_signin_outage_001",
+            "body": "Xbox Live is seemingly down right now but, and this goes for anyone having these issues: you can bypass the initial login by going offline and then logging in. IIRC you should be able to log into any of your digitally purchased games if your Xbox is set as your home Xbox. Otherwise you're just gonna have to choose from your collection of physical copies until login services are fixed.",
+            "author": "rigg197",
+            "created_utc": "2024-01-15T18:15:00",
+            "score": 14,
+            "parent_id": null
+          },
+          {
+            "id": "c9",
+            "post_id": "xbox_live_signin_outage_001",
+            "body": "same can't login on my xbox or website",
+            "author": "jaymang92",
+            "created_utc": "2024-01-15T18:40:00",
+            "score": 6,
+            "parent_id": null
+          },
+          {
+            "id": "c13",
+            "post_id": "xbox_live_signin_outage_001",
+            "body": "Same here even the Microsoft website is down/won't load.",
+            "author": "sickyp",
+            "created_utc": "2024-01-15T19:00:00",
+            "score": 9,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_002_storage_expansion_question",
+      "description": "User asking for product recommendations about storage - NOT an issue, just a question",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "storage_expansion_question_001",
+        "subreddit": "XboxSupport",
+        "title": "What is the most worth it storage expansion for series x?",
+        "body": "I wanna know what most of you series x users use for storage expansion and what will be the most recommended nowadays for 1 tb expansion? Wether it's expansion card, external ssd, sata ssd with adapter or even hdd",
+        "author": "Plastic-Spell-9508",
+        "created_utc": "2024-12-10T08:00:00",
+        "url": "https://reddit.com/r/XboxSupport/comments/storage_expansion_question_001",
+        "score": 4,
+        "num_comments": 18,
+        "flair": null,
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "storage_expansion_question_001",
+            "body": "The official Seagate Expansion Card is the way to go. It supports all games made for the XBox Series S | X. If you only want storage for legacy titles, XBox 360 titles, etc., you can plug in an external USB drive and run them from there.",
+            "author": "StorminXX",
+            "created_utc": "2024-12-10T08:10:00",
+            "score": 6,
+            "parent_id": null
+          },
+          {
+            "id": "c3",
+            "post_id": "storage_expansion_question_001",
+            "body": "I use the 1TB expansion card from Seagate, I really wish i could fork over the caps to get myself the 4TB one, but sheesh that price is wild",
+            "author": "Lonely_Dovah",
+            "created_utc": "2024-12-10T08:20:00",
+            "score": 5,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_003_game_pass_download_issue",
+      "description": "Game Pass games not downloading properly - should be classified as game_pass issue",
+      "expected_is_issue": true,
+      "expected_category": "game_pass",
+      "expected_severity": "medium",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "gamepass_download_issue_001",
+        "subreddit": "XboxGamePass",
+        "title": "Game Pass games stuck at 0% download",
+        "body": "Every time I try to download a game from Game Pass, it gets stuck at 0%. I've tried restarting my console, clearing the cache, and even reinstalling the Xbox app. Nothing works. Other games from the store download fine, it's just Game Pass titles. Anyone else experiencing this?",
+        "author": "FrustratedGamer99",
+        "created_utc": "2024-01-20T14:30:00",
+        "url": "https://reddit.com/r/XboxGamePass/comments/gamepass_download_issue_001",
+        "score": 45,
+        "num_comments": 32,
+        "flair": "Tech Support",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "gamepass_download_issue_001",
+            "body": "Same issue here! Started yesterday for me. Super frustrating.",
+            "author": "GamePassFan2024",
+            "created_utc": "2024-01-20T14:45:00",
+            "score": 12,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "gamepass_download_issue_001",
+            "body": "I fixed mine by signing out of my account completely and signing back in. Worth a try!",
+            "author": "HelpfulXboxUser",
+            "created_utc": "2024-01-20T15:00:00",
+            "score": 8,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_004_controller_drift",
+      "description": "Controller stick drift issue - hardware problem",
+      "expected_is_issue": true,
+      "expected_category": "hardware",
+      "expected_severity": "medium",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "controller_drift_001",
+        "subreddit": "xbox",
+        "title": "New Elite Series 2 controller has stick drift after 2 weeks",
+        "body": "Just bought an Elite Series 2 controller and after only 2 weeks of use, the left stick has started drifting. My character moves on its own in games. This is a $180 controller and it's already broken. Is this a known issue? Can I get a replacement?",
+        "author": "EliteControllerOwner",
+        "created_utc": "2024-02-01T10:00:00",
+        "url": "https://reddit.com/r/xbox/comments/controller_drift_001",
+        "score": 234,
+        "num_comments": 156,
+        "flair": "Hardware",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "controller_drift_001",
+            "body": "Welcome to the club. Elite controllers are notorious for this. My third one did the same thing.",
+            "author": "VeteranXboxer",
+            "created_utc": "2024-02-01T10:15:00",
+            "score": 45,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "controller_drift_001",
+            "body": "Contact Xbox support, they should replace it under warranty. Same thing happened to me.",
+            "author": "SupportHelper",
+            "created_utc": "2024-02-01T10:30:00",
+            "score": 38,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_005_feature_request",
+      "description": "User requesting a new feature - NOT an issue",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "feature_request_001",
+        "subreddit": "xbox",
+        "title": "Xbox should add folders for organizing games",
+        "body": "I really wish Xbox would let us create folders to organize our game library. With Game Pass, I have so many games installed and it's hard to find what I want to play. PlayStation has this feature, why doesn't Xbox?",
+        "author": "OrganizedGamer",
+        "created_utc": "2024-01-25T16:00:00",
+        "url": "https://reddit.com/r/xbox/comments/feature_request_001",
+        "score": 892,
+        "num_comments": 234,
+        "flair": "Discussion",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "feature_request_001",
+            "body": "You can use Groups in the Guide menu. Not quite folders but helps organize games.",
+            "author": "XboxTipster",
+            "created_utc": "2024-01-25T16:15:00",
+            "score": 156,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_006_game_crash_issue",
+      "description": "Game crashing repeatedly - should be classified as game_crash",
+      "expected_is_issue": true,
+      "expected_category": "game_crash",
+      "expected_severity": "high",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "game_crash_001",
+        "subreddit": "xbox",
+        "title": "Starfield keeps crashing to dashboard after latest update",
+        "body": "Ever since the latest update, Starfield crashes to the dashboard every 10-15 minutes. I've tried reinstalling the game, clearing cache, and even factory resetting my Series X. Nothing helps. The game was working perfectly before the update. This is making the game unplayable.",
+        "author": "SpaceExplorer2024",
+        "created_utc": "2024-02-10T20:00:00",
+        "url": "https://reddit.com/r/xbox/comments/game_crash_001",
+        "score": 567,
+        "num_comments": 423,
+        "flair": "Tech Support",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "game_crash_001",
+            "body": "Same here! Crashes constantly now. Was fine before the patch.",
+            "author": "StarfieldFan",
+            "created_utc": "2024-02-10T20:15:00",
+            "score": 89,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "game_crash_001",
+            "body": "Bethesda needs to fix this ASAP. Half my save files are corrupted now from the crashes.",
+            "author": "AngryGamer123",
+            "created_utc": "2024-02-10T20:30:00",
+            "score": 67,
+            "parent_id": null
+          },
+          {
+            "id": "c3",
+            "post_id": "game_crash_001",
+            "body": "Happening to me too. Series X as well. Tried everything.",
+            "author": "TechSavvyPlayer",
+            "created_utc": "2024-02-10T20:45:00",
+            "score": 34,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_007_party_chat_issue",
+      "description": "Party chat not working - social feature issue",
+      "expected_is_issue": true,
+      "expected_category": "social",
+      "expected_severity": "medium",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "party_chat_001",
+        "subreddit": "xbox",
+        "title": "Can't hear friends in party chat but they can hear me",
+        "body": "For the past few days, I can't hear anyone in party chat. They can hear me fine, but I get no audio from them. Game audio works perfectly. I've checked all my settings, NAT type is open, headset works fine with other devices. This is driving me crazy!",
+        "author": "PartyProblems",
+        "created_utc": "2024-02-15T19:00:00",
+        "url": "https://reddit.com/r/xbox/comments/party_chat_001",
+        "score": 78,
+        "num_comments": 45,
+        "flair": "Tech Support",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "party_chat_001",
+            "body": "Try going to Settings > Audio and check the party chat output setting. Sometimes it resets.",
+            "author": "AudioExpert",
+            "created_utc": "2024-02-15T19:15:00",
+            "score": 23,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "party_chat_001",
+            "body": "Same issue here. Started after the last system update.",
+            "author": "AffectedUser2",
+            "created_utc": "2024-02-15T19:30:00",
+            "score": 12,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_008_general_discussion",
+      "description": "General discussion post - NOT an issue",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "general_discussion_001",
+        "subreddit": "xbox",
+        "title": "What games are you playing this weekend?",
+        "body": "Just curious what everyone is diving into this weekend. I'm thinking of finally starting Elden Ring or continuing my Halo Infinite campaign. What are your plans?",
+        "author": "WeekendGamer",
+        "created_utc": "2024-02-16T12:00:00",
+        "url": "https://reddit.com/r/xbox/comments/general_discussion_001",
+        "score": 234,
+        "num_comments": 567,
+        "flair": "Discussion",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "general_discussion_001",
+            "body": "Definitely Elden Ring! You won't regret it.",
+            "author": "SoulsVeteran",
+            "created_utc": "2024-02-16T12:15:00",
+            "score": 45,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_009_purchase_issue",
+      "description": "Unable to purchase games from store - purchase issue",
+      "expected_is_issue": true,
+      "expected_category": "purchase",
+      "expected_severity": "high",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "purchase_issue_001",
+        "subreddit": "xbox",
+        "title": "Getting error code 0x80070005 when trying to buy games",
+        "body": "Every time I try to purchase a game from the Microsoft Store, I get error code 0x80070005. My payment method is valid, I have enough funds, and I've tried multiple games. This started happening yesterday. Anyone else having this issue?",
+        "author": "WantToBuyGames",
+        "created_utc": "2024-02-20T15:00:00",
+        "url": "https://reddit.com/r/xbox/comments/purchase_issue_001",
+        "score": 123,
+        "num_comments": 67,
+        "flair": "Tech Support",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "purchase_issue_001",
+            "body": "Same error here! Can't buy anything. Been trying all day.",
+            "author": "ShopperBlocked",
+            "created_utc": "2024-02-20T15:15:00",
+            "score": 34,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "purchase_issue_001",
+            "body": "This is a server-side issue. Microsoft Store is having problems. Check their status page.",
+            "author": "InformedUser",
+            "created_utc": "2024-02-20T15:30:00",
+            "score": 56,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_010_update_stuck",
+      "description": "System update stuck - update issue",
+      "expected_is_issue": true,
+      "expected_category": "update",
+      "expected_severity": "high",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "update_stuck_001",
+        "subreddit": "xbox",
+        "title": "Xbox Series X stuck on update screen for 3 hours",
+        "body": "My Series X started a system update and has been stuck at 47% for over 3 hours now. The console is still on, I can see the Xbox logo, but the update bar hasn't moved. I'm afraid to turn it off in case it bricks the console. What should I do?",
+        "author": "UpdateHell",
+        "created_utc": "2024-02-25T09:00:00",
+        "url": "https://reddit.com/r/xbox/comments/update_stuck_001",
+        "score": 89,
+        "num_comments": 54,
+        "flair": "Tech Support",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "update_stuck_001",
+            "body": "Had the same issue. Had to do an offline update using a USB drive. There's a guide on Xbox support.",
+            "author": "UpdateSurvivor",
+            "created_utc": "2024-02-25T09:15:00",
+            "score": 28,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "update_stuck_001",
+            "body": "You can safely hold the power button for 10 seconds to force shutdown, then try the update again.",
+            "author": "TechHelper",
+            "created_utc": "2024-02-25T09:30:00",
+            "score": 19,
+            "parent_id": null
+          }
+        ]
+      }
+    }
+  ]
+}
