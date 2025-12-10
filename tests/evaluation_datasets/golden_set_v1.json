@@ -73,6 +73,576 @@
       }
     },
     {
+      "test_case_id": "tc_conn_low_001",
+      "description": "Minor DNS resolution delays with easy workaround - low severity connectivity issue",
+      "expected_is_issue": true,
+      "expected_category": "connectivity",
+      "expected_severity": "low",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "conn_dns_delay_001",
+        "subreddit": "xbox",
+        "title": "Occasional slow connection to Xbox Live - takes a few extra seconds",
+        "body": "Sometimes when I start my Xbox, it takes about 10-15 seconds longer than usual to connect to Xbox Live. It always connects eventually, just a bit slower than before. Not a huge deal but wondering if others notice this. Restarting my router seems to fix it temporarily.",
+        "author": "PatientGamer42",
+        "created_utc": "2024-01-18T14:00:00",
+        "url": "https://reddit.com/r/xbox/comments/conn_dns_delay_001",
+        "score": 23,
+        "num_comments": 15,
+        "flair": null,
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "conn_dns_delay_001",
+            "body": "Yeah I notice this too occasionally. Usually clears up on its own.",
+            "author": "CasualXboxUser",
+            "created_utc": "2024-01-18T14:10:00",
+            "score": 5,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "conn_dns_delay_001",
+            "body": "Try setting a manual DNS like Google's 8.8.8.8. Helped me.",
+            "author": "NetworkHelper",
+            "created_utc": "2024-01-18T14:20:00",
+            "score": 8,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_conn_medium_001",
+      "description": "Intermittent disconnections during online gameplay - medium severity connectivity issue",
+      "expected_is_issue": true,
+      "expected_category": "connectivity",
+      "expected_severity": "medium",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "conn_disconnect_001",
+        "subreddit": "xbox",
+        "title": "Getting disconnected from Xbox Live randomly during games",
+        "body": "For the past week, I've been getting randomly disconnected from Xbox Live while playing online games. It happens maybe 2-3 times per gaming session. My internet is fine for everything else - streaming, PC gaming, etc. Only Xbox is having issues. NAT is open, wired connection. Really frustrating when it happens mid-match.",
+        "author": "FrustratedOnlinePlayer",
+        "created_utc": "2024-01-22T19:00:00",
+        "url": "https://reddit.com/r/xbox/comments/conn_disconnect_001",
+        "score": 67,
+        "num_comments": 43,
+        "flair": "Tech Support",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "conn_disconnect_001",
+            "body": "Same here! Started about a week ago for me too. Wonder if it's on Microsoft's end.",
+            "author": "AnotherDisconnectedUser",
+            "created_utc": "2024-01-22T19:15:00",
+            "score": 15,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "conn_disconnect_001",
+            "body": "Have you tried clearing your MAC address in network settings? Sometimes helps.",
+            "author": "TechTipsGuy",
+            "created_utc": "2024-01-22T19:30:00",
+            "score": 9,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_conn_high_001",
+      "description": "Cannot connect to any multiplayer games - high severity connectivity issue",
+      "expected_is_issue": true,
+      "expected_category": "connectivity",
+      "expected_severity": "high",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "conn_no_multiplayer_001",
+        "subreddit": "xbox",
+        "title": "Can't join ANY multiplayer games - stuck on connecting screen",
+        "body": "Since yesterday, I cannot join any multiplayer games. Every game I try - CoD, Halo, Forza - all get stuck on 'Connecting...' and then fail. I can sign into Xbox Live fine, I can browse the store, but multiplayer is completely broken. I've tried everything: restart, hard reset, router reset, port forwarding, even tried on my phone's hotspot. Nothing works. Single player games work fine but any online functionality is dead.",
+        "author": "MultiplayerBroken",
+        "created_utc": "2024-01-25T16:00:00",
+        "url": "https://reddit.com/r/xbox/comments/conn_no_multiplayer_001",
+        "score": 189,
+        "num_comments": 127,
+        "flair": "Tech Support",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "conn_no_multiplayer_001",
+            "body": "Exact same issue! Started yesterday for me too. This is ridiculous.",
+            "author": "BrokenMultiplayerToo",
+            "created_utc": "2024-01-25T16:15:00",
+            "score": 34,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "conn_no_multiplayer_001",
+            "body": "I've seen others reporting this. Seems like a widespread issue. Xbox support hasn't acknowledged it yet.",
+            "author": "CommunityWatcher",
+            "created_utc": "2024-01-25T16:30:00",
+            "score": 28,
+            "parent_id": null
+          },
+          {
+            "id": "c3",
+            "post_id": "conn_no_multiplayer_001",
+            "body": "Try testing your NAT type in settings. Mine suddenly shows as Strict even though nothing changed.",
+            "author": "NetworkDebugger",
+            "created_utc": "2024-01-25T16:45:00",
+            "score": 19,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_conn_neg_001",
+      "description": "Question about NAT type settings - NOT an issue, just asking for help understanding",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "conn_nat_question_001",
+        "subreddit": "xbox",
+        "title": "What does NAT type mean and which one is best?",
+        "body": "I keep seeing people talk about NAT types. My Xbox shows 'Moderate' NAT. Is this good or bad? What's the difference between Open, Moderate, and Strict? Should I try to change it? Everything seems to work fine for me but I want to make sure I have the best settings.",
+        "author": "CuriousNewXboxOwner",
+        "created_utc": "2024-01-20T10:00:00",
+        "url": "https://reddit.com/r/xbox/comments/conn_nat_question_001",
+        "score": 34,
+        "num_comments": 22,
+        "flair": "Discussion",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "conn_nat_question_001",
+            "body": "Open is best, Moderate is fine for most games, Strict can cause issues joining parties. If everything works, don't worry about it!",
+            "author": "HelpfulExplainer",
+            "created_utc": "2024-01-20T10:15:00",
+            "score": 18,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_conn_neg_002",
+      "description": "Discussion about best internet settings for Xbox - NOT an issue, optimization tips",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "conn_settings_discussion_001",
+        "subreddit": "xbox",
+        "title": "Best network settings for competitive gaming on Xbox?",
+        "body": "Looking for tips on optimizing my network settings for competitive gaming. I play a lot of ranked matches and want to minimize any lag or latency. Currently using WiFi but considering going wired. What DNS settings do you all recommend? Any other tips for getting the best connection?",
+        "author": "CompetitiveGamer2024",
+        "created_utc": "2024-01-21T15:00:00",
+        "url": "https://reddit.com/r/xbox/comments/conn_settings_discussion_001",
+        "score": 89,
+        "num_comments": 67,
+        "flair": "Discussion",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "conn_settings_discussion_001",
+            "body": "Always go wired if possible. For DNS, I use Cloudflare 1.1.1.1 - seems fastest for me.",
+            "author": "ProGamerTips",
+            "created_utc": "2024-01-21T15:15:00",
+            "score": 45,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "conn_settings_discussion_001",
+            "body": "QoS settings on your router can help prioritize Xbox traffic.",
+            "author": "NetworkEnthusiast",
+            "created_utc": "2024-01-21T15:30:00",
+            "score": 32,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_conn_neg_003",
+      "description": "Sharing tips that improved connection - NOT an issue, positive experience sharing",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "conn_tips_sharing_001",
+        "subreddit": "xbox",
+        "title": "PSA: Changing DNS to Cloudflare fixed my lag issues!",
+        "body": "Just wanted to share that after switching from my ISP's default DNS to Cloudflare (1.1.1.1 and 1.0.0.1), my connection feels way more responsive. Games load faster, matchmaking is quicker. If you're having minor lag issues, definitely worth trying! Here's how to do it: Settings > Network > Advanced settings > DNS settings > Manual...",
+        "author": "HelpfulTipSharer",
+        "created_utc": "2024-01-23T12:00:00",
+        "url": "https://reddit.com/r/xbox/comments/conn_tips_sharing_001",
+        "score": 567,
+        "num_comments": 123,
+        "flair": "Tips",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "conn_tips_sharing_001",
+            "body": "Thanks for sharing! Just tried this and it does seem snappier.",
+            "author": "GratefulUser",
+            "created_utc": "2024-01-23T12:15:00",
+            "score": 78,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_conn_neg_004",
+      "description": "Comparing wired vs wireless performance - NOT an issue, general comparison discussion",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "conn_wired_vs_wireless_001",
+        "subreddit": "xbox",
+        "title": "Is the difference between wired and WiFi really that big?",
+        "body": "My Xbox is in a room far from my router. I'd have to run a long ethernet cable or get powerline adapters to go wired. Currently on 5GHz WiFi and getting about 200mbps download. Is it really worth the effort and expense to go wired? What kind of improvement would I actually see?",
+        "author": "WiFiOrWired",
+        "created_utc": "2024-01-24T18:00:00",
+        "url": "https://reddit.com/r/xbox/comments/conn_wired_vs_wireless_001",
+        "score": 156,
+        "num_comments": 89,
+        "flair": "Discussion",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "conn_wired_vs_wireless_001",
+            "body": "It's not about speed, it's about latency and stability. Wired will give you more consistent ping and no random packet loss.",
+            "author": "NetworkExpert",
+            "created_utc": "2024-01-24T18:15:00",
+            "score": 89,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "conn_wired_vs_wireless_001",
+            "body": "If your WiFi is working fine and you're not having issues, don't worry about it. 200mbps is plenty.",
+            "author": "PracticalAdvice",
+            "created_utc": "2024-01-24T18:30:00",
+            "score": 67,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_perf_low_001",
+      "description": "Minor occasional frame drops in menus - low severity performance issue",
+      "expected_is_issue": true,
+      "expected_category": "performance",
+      "expected_severity": "low",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "perf_menu_drops_001",
+        "subreddit": "xbox",
+        "title": "Slight frame drops in Xbox dashboard menus",
+        "body": "Anyone else notice the Xbox dashboard feels a bit choppy sometimes? When scrolling through my games list, I see occasional stutters. It's not a big deal and games run fine, just wondering if this is normal or if others see it too. Series X here.",
+        "author": "NoticeableDetails",
+        "created_utc": "2024-02-01T11:00:00",
+        "url": "https://reddit.com/r/xbox/comments/perf_menu_drops_001",
+        "score": 28,
+        "num_comments": 19,
+        "flair": null,
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "perf_menu_drops_001",
+            "body": "Yeah the dashboard has never been super smooth. It's been like that since launch.",
+            "author": "LongTimeXboxUser",
+            "created_utc": "2024-02-01T11:15:00",
+            "score": 12,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_perf_medium_001",
+      "description": "Consistent frame drops during gameplay affecting experience - medium severity performance issue",
+      "expected_is_issue": true,
+      "expected_category": "performance",
+      "expected_severity": "medium",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "perf_gameplay_drops_001",
+        "subreddit": "xbox",
+        "title": "Forza Horizon 5 dropping to 30fps in quality mode since last update",
+        "body": "After the latest Forza update, I'm getting consistent frame drops in Quality mode. It's supposed to run at 60fps but it keeps dropping to 30 or lower during races. Performance mode is fine. I've cleared cache, reinstalled the game, but the issue persists. Other games run fine so it seems specific to Forza.",
+        "author": "RacingEnthusiast",
+        "created_utc": "2024-02-05T14:00:00",
+        "url": "https://reddit.com/r/xbox/comments/perf_gameplay_drops_001",
+        "score": 156,
+        "num_comments": 89,
+        "flair": "Tech Support",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "perf_gameplay_drops_001",
+            "body": "Same issue! Quality mode is broken since the update. Had to switch to Performance.",
+            "author": "ForzaPlayer99",
+            "created_utc": "2024-02-05T14:15:00",
+            "score": 34,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "perf_gameplay_drops_001",
+            "body": "Known bug. Playground Games said they're working on a fix.",
+            "author": "NewsTracker",
+            "created_utc": "2024-02-05T14:30:00",
+            "score": 28,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_perf_high_001",
+      "description": "Severe performance issues making games unplayable - high severity performance issue",
+      "expected_is_issue": true,
+      "expected_category": "performance",
+      "expected_severity": "high",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "perf_unplayable_001",
+        "subreddit": "xbox",
+        "title": "Xbox Series X running games at 10-15fps - completely unplayable",
+        "body": "Something is seriously wrong with my Series X. ALL games are running at maybe 10-15fps. Even simple indie games stutter like crazy. The console runs hot but not excessively. I've tried factory reset, clearing cache, reinstalling games. Nothing helps. The console is only 6 months old. Anyone experienced this? Is my Xbox dying?",
+        "author": "DesperateForHelp",
+        "created_utc": "2024-02-08T16:00:00",
+        "url": "https://reddit.com/r/xbox/comments/perf_unplayable_001",
+        "score": 234,
+        "num_comments": 167,
+        "flair": "Tech Support",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "perf_unplayable_001",
+            "body": "This sounds like a hardware issue. Contact Xbox support for a repair/replacement.",
+            "author": "TechExpert",
+            "created_utc": "2024-02-08T16:15:00",
+            "score": 67,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "perf_unplayable_001",
+            "body": "Could be thermal throttling. Make sure your Xbox has proper ventilation and isn't clogged with dust.",
+            "author": "HardwareHelper",
+            "created_utc": "2024-02-08T16:30:00",
+            "score": 45,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_perf_critical_001",
+      "description": "Widespread performance degradation after system update affecting many users - critical severity performance issue",
+      "expected_is_issue": true,
+      "expected_category": "performance",
+      "expected_severity": "critical",
+      "expected_min_confidence": 0.8,
+      "edge_case_type": null,
+      "post": {
+        "id": "perf_system_wide_001",
+        "subreddit": "xbox",
+        "title": "MAJOR BUG: Latest Xbox update causing massive performance issues for everyone",
+        "body": "Since the system update that rolled out today, my Series X is nearly unusable. Games that ran at 60fps are now stuttering at 20fps. The dashboard is laggy, apps are slow to load. This is affecting my Xbox One X too - both consoles updated today and both have the same problem now. Looking at Twitter, seems like TONS of people are reporting this.",
+        "author": "UpdateDisaster",
+        "created_utc": "2024-02-12T18:00:00",
+        "url": "https://reddit.com/r/xbox/comments/perf_system_wide_001",
+        "score": 2341,
+        "num_comments": 1567,
+        "flair": "Tech Support",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "perf_system_wide_001",
+            "body": "Same here! Both my consoles are affected. This update broke something major.",
+            "author": "MultiConsoleOwner",
+            "created_utc": "2024-02-12T18:10:00",
+            "score": 456,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "perf_system_wide_001",
+            "body": "Xbox status page doesn't show anything yet. This needs to be escalated ASAP.",
+            "author": "CommunityManager",
+            "created_utc": "2024-02-12T18:20:00",
+            "score": 389,
+            "parent_id": null
+          },
+          {
+            "id": "c3",
+            "post_id": "perf_system_wide_001",
+            "body": "Confirmed on my end too. Series S here. Everything is choppy since the update.",
+            "author": "SeriesSUser",
+            "created_utc": "2024-02-12T18:30:00",
+            "score": 234,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_perf_neg_001",
+      "description": "Question about 60fps vs 120fps settings - NOT an issue, asking for advice",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "perf_fps_question_001",
+        "subreddit": "xbox",
+        "title": "Should I play at 60fps or 120fps? What's the difference?",
+        "body": "I just got a new TV that supports 120Hz. My Series X has options for 60fps and 120fps in some games. Is 120fps really that much better? I'm not a super competitive player, mostly play single player games. What do you all prefer?",
+        "author": "NewTVOwner",
+        "created_utc": "2024-02-03T10:00:00",
+        "url": "https://reddit.com/r/xbox/comments/perf_fps_question_001",
+        "score": 67,
+        "num_comments": 89,
+        "flair": "Discussion",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "perf_fps_question_001",
+            "body": "For single player games, 60fps with better graphics is usually the way to go. 120fps is more for competitive multiplayer.",
+            "author": "GamingAdvice",
+            "created_utc": "2024-02-03T10:15:00",
+            "score": 45,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_perf_neg_002",
+      "description": "Discussion comparing Xbox vs PS5 performance - NOT an issue, general comparison",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "perf_comparison_001",
+        "subreddit": "xbox",
+        "title": "How does Xbox Series X compare to PS5 in multiplatform games?",
+        "body": "Thinking about getting a Series X. How does it compare to PS5 for games like Call of Duty, FIFA, etc? I've heard they're basically identical but wanted to get opinions from actual Xbox owners. Are there any games where Xbox performs notably better or worse?",
+        "author": "ConsoleDecider",
+        "created_utc": "2024-02-04T14:00:00",
+        "url": "https://reddit.com/r/xbox/comments/perf_comparison_001",
+        "score": 234,
+        "num_comments": 456,
+        "flair": "Discussion",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "perf_comparison_001",
+            "body": "Basically identical for most games. Digital Foundry does great comparisons if you want details.",
+            "author": "TechAnalyst",
+            "created_utc": "2024-02-04T14:15:00",
+            "score": 89,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_perf_neg_003",
+      "description": "Tips for optimizing TV settings for gaming - NOT an issue, helpful tips sharing",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "perf_tv_settings_001",
+        "subreddit": "xbox",
+        "title": "PSA: Make sure your TV is in Game Mode for best performance!",
+        "body": "Just a reminder for new Xbox owners - make sure your TV is set to Game Mode! I was playing for months without it and didn't realize how much input lag I had until I enabled it. Games feel so much more responsive now. Most TVs have this in the picture settings. Look for 'Game Mode' or 'Low Latency Mode'.",
+        "author": "HelpfulGamer",
+        "created_utc": "2024-02-06T12:00:00",
+        "url": "https://reddit.com/r/xbox/comments/perf_tv_settings_001",
+        "score": 892,
+        "num_comments": 234,
+        "flair": "Tips",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "perf_tv_settings_001",
+            "body": "Good tip! Also make sure ALLM (Auto Low Latency Mode) is enabled on your TV if it supports it - Xbox will automatically switch to game mode.",
+            "author": "TechTipster",
+            "created_utc": "2024-02-06T12:15:00",
+            "score": 156,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_perf_neg_004",
+      "description": "Praising smooth performance in a game - NOT an issue, positive experience",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "perf_praise_001",
+        "subreddit": "xbox",
+        "title": "Gears 5 at 120fps is absolutely incredible!",
+        "body": "Just wanted to share my appreciation for how well Gears 5 runs on Series X. Solid 120fps, no drops, and it looks amazing. The Coalition did an incredible job optimizing this game. If you haven't tried it at 120fps, you're missing out. This is how all games should run!",
+        "author": "HappyGamer2024",
+        "created_utc": "2024-02-07T19:00:00",
+        "url": "https://reddit.com/r/xbox/comments/perf_praise_001",
+        "score": 567,
+        "num_comments": 123,
+        "flair": "Appreciation",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "perf_praise_001",
+            "body": "Agreed! Coalition really knows how to optimize. Gears has always been a technical showcase.",
+            "author": "GearsFan",
+            "created_utc": "2024-02-07T19:15:00",
+            "score": 89,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
       "test_case_id": "tc_002_storage_expansion_question",
       "description": "User asking for product recommendations about storage - NOT an issue, just a question",
       "expected_is_issue": false,
@@ -228,6 +798,79 @@
       }
     },
     {
+      "test_case_id": "tc_crash_low_001",
+      "description": "Rare game crash with easy workaround - low severity game_crash issue",
+      "expected_is_issue": true,
+      "expected_category": "game_crash",
+      "expected_severity": "low",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "crash_rare_001",
+        "subreddit": "xbox",
+        "title": "Hogwarts Legacy crashed once when fast traveling",
+        "body": "Had my first crash in Hogwarts Legacy after about 20 hours of playtime. Was fast traveling to Hogsmeade and the game froze then kicked me to the dashboard. Loaded back up and my save was fine, only lost a couple minutes of progress. Not a big deal but wanted to see if anyone else experienced this. Game runs great otherwise.",
+        "author": "WizardingWorldFan",
+        "created_utc": "2024-02-15T14:00:00",
+        "url": "https://reddit.com/r/xbox/comments/crash_rare_001",
+        "score": 12,
+        "num_comments": 8,
+        "flair": null,
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "crash_rare_001",
+            "body": "I've had maybe 2-3 crashes in 50 hours. Pretty normal for a big open world game honestly.",
+            "author": "OpenWorldVeteran",
+            "created_utc": "2024-02-15T14:15:00",
+            "score": 6,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_crash_medium_001",
+      "description": "Game crashes at specific point blocking progress - medium severity game_crash issue",
+      "expected_is_issue": true,
+      "expected_category": "game_crash",
+      "expected_severity": "medium",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "crash_specific_001",
+        "subreddit": "xbox",
+        "title": "Diablo 4 crashes every time I enter a specific dungeon",
+        "body": "There's this one dungeon in Diablo 4 (Cultist Refuge) that crashes my game every single time I try to enter it. I can play everything else fine - other dungeons, world bosses, helltides. But this specific dungeon crashes instantly when I load in. It's part of a quest I need to complete. Anyone else have this issue?",
+        "author": "DiabloPlayer2024",
+        "created_utc": "2024-02-18T16:00:00",
+        "url": "https://reddit.com/r/xbox/comments/crash_specific_001",
+        "score": 89,
+        "num_comments": 56,
+        "flair": "Tech Support",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "crash_specific_001",
+            "body": "Same dungeon crashes for me too! Submitted a bug report to Blizzard.",
+            "author": "AnotherDiabloFan",
+            "created_utc": "2024-02-18T16:15:00",
+            "score": 23,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "crash_specific_001",
+            "body": "Workaround: try entering in a group with someone else as party leader. Worked for me.",
+            "author": "WorkaroundFinder",
+            "created_utc": "2024-02-18T16:30:00",
+            "score": 34,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
       "test_case_id": "tc_006_game_crash_issue",
       "description": "Game crashing repeatedly - should be classified as game_crash",
       "expected_is_issue": true,
@@ -278,6 +921,184 @@
       }
     },
     {
+      "test_case_id": "tc_crash_critical_001",
+      "description": "Multiple games crashing causing data loss across many users - critical severity game_crash issue",
+      "expected_is_issue": true,
+      "expected_category": "game_crash",
+      "expected_severity": "critical",
+      "expected_min_confidence": 0.8,
+      "edge_case_type": null,
+      "post": {
+        "id": "crash_widespread_001",
+        "subreddit": "xbox",
+        "title": "URGENT: New system update is corrupting save files when games crash",
+        "body": "After today's system update, games are crashing constantly AND corrupting save files. I've lost 100+ hours of progress in Elden Ring - save file completely gone. Seeing tons of reports on Twitter of the same thing. This is happening across multiple games - Elden Ring, Starfield, Hogwarts Legacy. DO NOT UPDATE if you haven't already. Microsoft needs to pull this update ASAP before more people lose their data.",
+        "author": "DataLossVictim",
+        "created_utc": "2024-02-22T20:00:00",
+        "url": "https://reddit.com/r/xbox/comments/crash_widespread_001",
+        "score": 4567,
+        "num_comments": 2341,
+        "flair": "Tech Support",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "crash_widespread_001",
+            "body": "Lost my Starfield save too. 80 hours gone. This is unacceptable.",
+            "author": "AnotherVictim",
+            "created_utc": "2024-02-22T20:10:00",
+            "score": 567,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "crash_widespread_001",
+            "body": "Xbox support is telling people to factory reset. That won't bring back our saves! We need a rollback option.",
+            "author": "AngryCustomer",
+            "created_utc": "2024-02-22T20:20:00",
+            "score": 445,
+            "parent_id": null
+          },
+          {
+            "id": "c3",
+            "post_id": "crash_widespread_001",
+            "body": "This needs media attention. Tag all the gaming journalists. Microsoft needs to acknowledge this.",
+            "author": "CommunityOrganizer",
+            "created_utc": "2024-02-22T20:30:00",
+            "score": 389,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_crash_neg_001",
+      "description": "Question about game stability - NOT an issue, asking for opinions",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "crash_question_stability_001",
+        "subreddit": "xbox",
+        "title": "Is Cyberpunk 2077 stable now on Series X?",
+        "body": "I held off on buying Cyberpunk at launch because of all the bugs and crashes. Now that it's been a couple years and they've released patches, is it worth getting? Does it run well on Series X? Looking for honest opinions before I buy.",
+        "author": "CautiousBuyer",
+        "created_utc": "2024-02-16T11:00:00",
+        "url": "https://reddit.com/r/xbox/comments/crash_question_stability_001",
+        "score": 89,
+        "num_comments": 156,
+        "flair": "Discussion",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "crash_question_stability_001",
+            "body": "It runs great now! Played through the whole game with the Phantom Liberty DLC. Maybe 2 crashes in 60 hours.",
+            "author": "CyberpunkFan",
+            "created_utc": "2024-02-16T11:15:00",
+            "score": 67,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_crash_neg_002",
+      "description": "Discussion about intentional game restarts - NOT an issue, game design discussion",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "crash_game_design_001",
+        "subreddit": "xbox",
+        "title": "Why does Returnal restart you when you die? Is this normal?",
+        "body": "Just started playing Returnal and every time I die the game makes me start over from the beginning. Is this a bug or is it intentional? It feels like the game is crashing and losing my progress but my friend says it's supposed to be like this. Can someone explain?",
+        "author": "NewToRoguelikes",
+        "created_utc": "2024-02-17T15:00:00",
+        "url": "https://reddit.com/r/xbox/comments/crash_game_design_001",
+        "score": 45,
+        "num_comments": 78,
+        "flair": "Discussion",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "crash_game_design_001",
+            "body": "That's intentional! It's a roguelike. Starting over is part of the game design. You keep some progress though.",
+            "author": "RoguelikeVeteran",
+            "created_utc": "2024-02-17T15:15:00",
+            "score": 56,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_crash_neg_003",
+      "description": "Celebrating game completion without crashes - NOT an issue, positive experience",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "crash_positive_001",
+        "subreddit": "xbox",
+        "title": "Just beat Elden Ring with zero crashes - amazing experience!",
+        "body": "After hearing about all the issues at launch, I waited a few months to play Elden Ring. Just finished my first playthrough - 120 hours and not a single crash! The game ran flawlessly on my Series X. Kudos to FromSoftware for the great port. Now starting NG+!",
+        "author": "PatientGamerWins",
+        "created_utc": "2024-02-19T18:00:00",
+        "url": "https://reddit.com/r/xbox/comments/crash_positive_001",
+        "score": 234,
+        "num_comments": 89,
+        "flair": "Appreciation",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "crash_positive_001",
+            "body": "Same experience here! Rock solid performance. Enjoy NG+, it's even better the second time.",
+            "author": "EldenRingFan",
+            "created_utc": "2024-02-19T18:15:00",
+            "score": 45,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_crash_neg_004",
+      "description": "Tutorial on how to report crashes - NOT an issue, helpful guide",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "crash_tutorial_001",
+        "subreddit": "xbox",
+        "title": "How to properly report game crashes to Microsoft and developers",
+        "body": "Seeing a lot of people complain about crashes here but not knowing how to report them effectively. Here's a guide: 1) Note the exact error code if shown. 2) Use the Xbox Report a Problem app to submit crash reports. 3) Include what you were doing when it crashed. 4) Check the game's official support channels. Developers can't fix what they don't know about!",
+        "author": "HelpfulCommunityMember",
+        "created_utc": "2024-02-20T14:00:00",
+        "url": "https://reddit.com/r/xbox/comments/crash_tutorial_001",
+        "score": 456,
+        "num_comments": 67,
+        "flair": "Tips",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "crash_tutorial_001",
+            "body": "Great guide! Pinning this for future reference. Everyone should read this.",
+            "author": "ModeratorHelper",
+            "created_utc": "2024-02-20T14:15:00",
+            "score": 89,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
       "test_case_id": "tc_007_party_chat_issue",
       "description": "Party chat not working - social feature issue",
       "expected_is_issue": true,
@@ -319,6 +1140,298 @@
       }
     },
     {
+      "test_case_id": "tc_acct_low_001",
+      "description": "Minor profile sync delay - low severity account issue",
+      "expected_is_issue": true,
+      "expected_category": "account",
+      "expected_severity": "low",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "acct_sync_delay_001",
+        "subreddit": "xbox",
+        "title": "Gamertag change not showing up on all devices",
+        "body": "Changed my gamertag yesterday and it shows the new name on my Series X, but my phone app still shows the old one. I've logged out and back in on the app but it's still the old name. Not urgent but kind of annoying. Anyone know how long it takes to sync across all devices?",
+        "author": "NewNameWho",
+        "created_utc": "2024-02-20T10:00:00",
+        "url": "https://reddit.com/r/xbox/comments/acct_sync_delay_001",
+        "score": 15,
+        "num_comments": 12,
+        "flair": null,
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "acct_sync_delay_001",
+            "body": "Usually takes 24-48 hours to fully propagate. Give it time.",
+            "author": "PatientHelper",
+            "created_utc": "2024-02-20T10:15:00",
+            "score": 8,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_acct_medium_001",
+      "description": "Profile won't load game saves - medium severity account issue",
+      "expected_is_issue": true,
+      "expected_category": "account",
+      "expected_severity": "medium",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "acct_saves_missing_001",
+        "subreddit": "xbox",
+        "title": "My cloud saves aren't syncing to my profile",
+        "body": "When I sign into my Xbox account, my cloud saves for games aren't loading. It keeps asking if I want to use local or cloud saves, and when I choose cloud it says 'sync failed'. I've tried on two different consoles with the same result. My internet is fine and I can play online games. It's just the cloud save sync that's broken.",
+        "author": "CloudSaveProblems",
+        "created_utc": "2024-02-22T14:00:00",
+        "url": "https://reddit.com/r/xbox/comments/acct_saves_missing_001",
+        "score": 67,
+        "num_comments": 45,
+        "flair": "Tech Support",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "acct_saves_missing_001",
+            "body": "Same issue here! My cloud saves have been failing to sync for two days now.",
+            "author": "AlsoAffected",
+            "created_utc": "2024-02-22T14:15:00",
+            "score": 23,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "acct_saves_missing_001",
+            "body": "Try going to Settings > System > Storage and clear local saved games. Then let it re-sync.",
+            "author": "TechSupporter",
+            "created_utc": "2024-02-22T14:30:00",
+            "score": 18,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_acct_high_001",
+      "description": "Account locked out completely - high severity account issue",
+      "expected_is_issue": true,
+      "expected_category": "account",
+      "expected_severity": "high",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "acct_locked_001",
+        "subreddit": "xbox",
+        "title": "Locked out of my Microsoft account - can't access any of my games",
+        "body": "My Microsoft account suddenly got locked and I can't sign in on any device. I have hundreds of dollars worth of games tied to this account. When I try to recover it, the security verification keeps failing even though I'm entering the correct info. Xbox support chat is useless - they just tell me to use the account recovery form which doesn't work. I've been locked out for 3 days now.",
+        "author": "LockedOutGamer",
+        "created_utc": "2024-02-24T16:00:00",
+        "url": "https://reddit.com/r/xbox/comments/acct_locked_001",
+        "score": 234,
+        "num_comments": 178,
+        "flair": "Tech Support",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "acct_locked_001",
+            "body": "Had this happen to me. You need to fill out the account recovery form with as much detail as possible - purchase history, old passwords, etc.",
+            "author": "RecoveredUser",
+            "created_utc": "2024-02-24T16:15:00",
+            "score": 56,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "acct_locked_001",
+            "body": "Try reaching out on Twitter @XboxSupport. Sometimes they can escalate faster than chat.",
+            "author": "SocialMediaTip",
+            "created_utc": "2024-02-24T16:30:00",
+            "score": 45,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_acct_critical_001",
+      "description": "Mass account compromise affecting many users - critical severity account issue",
+      "expected_is_issue": true,
+      "expected_category": "account",
+      "expected_severity": "critical",
+      "expected_min_confidence": 0.8,
+      "edge_case_type": null,
+      "post": {
+        "id": "acct_breach_001",
+        "subreddit": "xbox",
+        "title": "WARNING: Mass Xbox account hacks happening - check your accounts NOW",
+        "body": "Multiple people including myself have had our Xbox accounts compromised in the last few hours. Someone accessed my account, changed the email, and made purchases. I had 2FA enabled! Looking on Twitter and other forums, this seems to be affecting a LOT of people right now. Change your passwords immediately and enable additional security. Microsoft needs to investigate this - there might be a security breach.",
+        "author": "SecurityAlert2024",
+        "created_utc": "2024-02-26T22:00:00",
+        "url": "https://reddit.com/r/xbox/comments/acct_breach_001",
+        "score": 5678,
+        "num_comments": 3421,
+        "flair": "Tech Support",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "acct_breach_001",
+            "body": "Same happened to me! $200 in unauthorized purchases. Already disputed with my bank.",
+            "author": "HackedUser1",
+            "created_utc": "2024-02-26T22:10:00",
+            "score": 678,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "acct_breach_001",
+            "body": "This is huge. Tagging media outlets. Microsoft needs to acknowledge this immediately.",
+            "author": "CommunityAdvocate",
+            "created_utc": "2024-02-26T22:20:00",
+            "score": 567,
+            "parent_id": null
+          },
+          {
+            "id": "c3",
+            "post_id": "acct_breach_001",
+            "body": "Check haveibeenpwned.com - there might have been a credential leak somewhere.",
+            "author": "SecurityExpert",
+            "created_utc": "2024-02-26T22:30:00",
+            "score": 445,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_acct_neg_001",
+      "description": "Question about changing gamertag - NOT an issue, asking how-to",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "acct_gamertag_question_001",
+        "subreddit": "xbox",
+        "title": "How do I change my gamertag? Is the first change still free?",
+        "body": "I made my gamertag when I was 12 and it's pretty embarrassing now. How do I change it? I heard the first change is free but I'm not sure if that's still true. Also, will I lose my achievements or game progress if I change it?",
+        "author": "EmbarrassedGamertag",
+        "created_utc": "2024-02-21T11:00:00",
+        "url": "https://reddit.com/r/xbox/comments/acct_gamertag_question_001",
+        "score": 45,
+        "num_comments": 34,
+        "flair": "Discussion",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "acct_gamertag_question_001",
+            "body": "Yes first change is free! Go to xbox.com/changegamertag. You won't lose anything - all progress stays.",
+            "author": "HelpfulAnswer",
+            "created_utc": "2024-02-21T11:15:00",
+            "score": 34,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_acct_neg_002",
+      "description": "Discussion about family sharing - NOT an issue, asking for explanation",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "acct_family_question_001",
+        "subreddit": "xbox",
+        "title": "Can someone explain how game sharing works with family accounts?",
+        "body": "My kids want to play my Game Pass games on their own Xbox. I've heard about 'home Xbox' settings and family accounts but I'm confused about how it all works. Can someone explain the best way to set this up so my kids can play my games on their console?",
+        "author": "ConfusedParent",
+        "created_utc": "2024-02-23T15:00:00",
+        "url": "https://reddit.com/r/xbox/comments/acct_family_question_001",
+        "score": 123,
+        "num_comments": 89,
+        "flair": "Discussion",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "acct_family_question_001",
+            "body": "Set their Xbox as your 'Home Xbox'. They'll have access to all your digital games and Game Pass without needing to sign in as you.",
+            "author": "FamilySharingExpert",
+            "created_utc": "2024-02-23T15:15:00",
+            "score": 67,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_acct_neg_003",
+      "description": "Sharing positive experience with support - NOT an issue, positive story",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "acct_positive_support_001",
+        "subreddit": "xbox",
+        "title": "Shoutout to Xbox Support for recovering my hacked account in 24 hours!",
+        "body": "Last week my account got compromised and I thought I'd lost everything. But Xbox Support was amazing - they verified my identity, reversed the unauthorized changes, and refunded the fraudulent purchases within 24 hours. Just wanted to share a positive experience since we usually only hear complaints. If you ever have account issues, don't give up!",
+        "author": "GratefulGamer",
+        "created_utc": "2024-02-25T12:00:00",
+        "url": "https://reddit.com/r/xbox/comments/acct_positive_support_001",
+        "score": 892,
+        "num_comments": 234,
+        "flair": "Appreciation",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "acct_positive_support_001",
+            "body": "Great to hear! Support gets a lot of hate but they really do help when it matters.",
+            "author": "PositiveVibes",
+            "created_utc": "2024-02-25T12:15:00",
+            "score": 123,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_acct_neg_004",
+      "description": "Tips for securing Xbox account - NOT an issue, helpful guide",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "acct_security_tips_001",
+        "subreddit": "xbox",
+        "title": "PSA: How to properly secure your Xbox/Microsoft account",
+        "body": "With all the account hacks I've been seeing, here's how to secure your account: 1) Enable 2FA using the Microsoft Authenticator app. 2) Use a unique, strong password. 3) Set up a recovery email and phone. 4) Review your sign-in activity regularly. 5) Never click suspicious links. 6) Remove unused payment methods. Stay safe out there!",
+        "author": "SecurityAdvocate",
+        "created_utc": "2024-02-27T10:00:00",
+        "url": "https://reddit.com/r/xbox/comments/acct_security_tips_001",
+        "score": 1234,
+        "num_comments": 345,
+        "flair": "Tips",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "acct_security_tips_001",
+            "body": "Great tips! I'd add: use a password manager and check haveibeenpwned.com regularly.",
+            "author": "AdditionalTips",
+            "created_utc": "2024-02-27T10:15:00",
+            "score": 234,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
       "test_case_id": "tc_008_general_discussion",
       "description": "General discussion post - NOT an issue",
       "expected_is_issue": false,
@@ -345,6 +1458,79 @@
             "author": "SoulsVeteran",
             "created_utc": "2024-02-16T12:15:00",
             "score": 45,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_purch_low_001",
+      "description": "Minor delay in purchase confirmation - low severity purchase issue",
+      "expected_is_issue": true,
+      "expected_category": "purchase",
+      "expected_severity": "low",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "purch_delay_001",
+        "subreddit": "xbox",
+        "title": "Purchase went through but game took 30 minutes to appear in library",
+        "body": "Bought a game from the store and the purchase completed (got the email confirmation) but the game didn't show up in my library for about 30 minutes. Had me worried for a bit but it eventually appeared. Just a heads up that there might be some delay in the system right now.",
+        "author": "PatientBuyer",
+        "created_utc": "2024-02-28T11:00:00",
+        "url": "https://reddit.com/r/xbox/comments/purch_delay_001",
+        "score": 18,
+        "num_comments": 12,
+        "flair": null,
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "purch_delay_001",
+            "body": "Sometimes the store is slow. Glad it eventually showed up!",
+            "author": "CasualCommenter",
+            "created_utc": "2024-02-28T11:15:00",
+            "score": 5,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_purch_medium_001",
+      "description": "Pre-order bonus not being applied - medium severity purchase issue",
+      "expected_is_issue": true,
+      "expected_category": "purchase",
+      "expected_severity": "medium",
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "purch_bonus_missing_001",
+        "subreddit": "xbox",
+        "title": "Pre-order bonuses not showing up for my purchase",
+        "body": "I pre-ordered the deluxe edition of a game which was supposed to include bonus content - extra skins, in-game currency, etc. The game downloaded fine but none of the bonus content is there. I checked my order history and it shows I bought the deluxe edition. Has anyone else had this issue? How do I get my bonus content?",
+        "author": "MissingBonuses",
+        "created_utc": "2024-03-01T14:00:00",
+        "url": "https://reddit.com/r/xbox/comments/purch_bonus_missing_001",
+        "score": 89,
+        "num_comments": 67,
+        "flair": "Tech Support",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "purch_bonus_missing_001",
+            "body": "Check the 'Manage game' option and look for add-ons. Sometimes they need to be manually installed.",
+            "author": "HelpfulTip",
+            "created_utc": "2024-03-01T14:15:00",
+            "score": 34,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "purch_bonus_missing_001",
+            "body": "Same issue here! Bought the ultimate edition and missing half the content.",
+            "author": "SameBoat",
+            "created_utc": "2024-03-01T14:30:00",
+            "score": 23,
             "parent_id": null
           }
         ]
@@ -386,6 +1572,175 @@
             "author": "InformedUser",
             "created_utc": "2024-02-20T15:30:00",
             "score": 56,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_purch_critical_001",
+      "description": "Store outage preventing all purchases for many users - critical severity purchase issue",
+      "expected_is_issue": true,
+      "expected_category": "purchase",
+      "expected_severity": "critical",
+      "expected_min_confidence": 0.8,
+      "edge_case_type": null,
+      "post": {
+        "id": "purch_outage_001",
+        "subreddit": "xbox",
+        "title": "Microsoft Store completely down - nobody can buy ANYTHING",
+        "body": "The Microsoft Store appears to be completely broken. Nobody can make any purchases. Getting errors on console, PC, and web. This started about an hour ago. Major game launch today and nobody can buy it. Thousands of people on Twitter reporting the same. This is a complete disaster - Microsoft is losing millions in sales right now.",
+        "author": "StoreWatcher",
+        "created_utc": "2024-03-05T18:00:00",
+        "url": "https://reddit.com/r/xbox/comments/purch_outage_001",
+        "score": 3456,
+        "num_comments": 1892,
+        "flair": "Tech Support",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "purch_outage_001",
+            "body": "Can confirm. Can't buy the new game that launched today. Tried everything.",
+            "author": "LaunchDayBuyer",
+            "created_utc": "2024-03-05T18:10:00",
+            "score": 456,
+            "parent_id": null
+          },
+          {
+            "id": "c2",
+            "post_id": "purch_outage_001",
+            "body": "Microsoft status page finally updated - they acknowledge the issue. No ETA on fix.",
+            "author": "StatusChecker",
+            "created_utc": "2024-03-05T18:20:00",
+            "score": 389,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_purch_neg_001",
+      "description": "Question about game pricing - NOT an issue, asking for information",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "purch_price_question_001",
+        "subreddit": "xbox",
+        "title": "Why is this game more expensive on Xbox than Steam?",
+        "body": "I noticed that a game I want to buy is $69.99 on the Xbox Store but only $59.99 on Steam. Why the price difference? Is this normal? Should I just buy it on PC instead?",
+        "author": "PriceConscious",
+        "created_utc": "2024-03-02T10:00:00",
+        "url": "https://reddit.com/r/xbox/comments/purch_price_question_001",
+        "score": 67,
+        "num_comments": 89,
+        "flair": "Discussion",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "purch_price_question_001",
+            "body": "Publishers set their own prices. Xbox store prices are sometimes higher. Wait for a sale!",
+            "author": "PricingExpert",
+            "created_utc": "2024-03-02T10:15:00",
+            "score": 34,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_purch_neg_002",
+      "description": "Asking about refund policy - NOT an issue, information request",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "purch_refund_question_001",
+        "subreddit": "xbox",
+        "title": "What's Xbox's refund policy for digital games?",
+        "body": "I bought a game and played it for about an hour but I'm not enjoying it. Can I get a refund? What are the rules for refunds on digital purchases? I've never tried to return a digital game before.",
+        "author": "RefundQuestion",
+        "created_utc": "2024-03-03T14:00:00",
+        "url": "https://reddit.com/r/xbox/comments/purch_refund_question_001",
+        "score": 45,
+        "num_comments": 56,
+        "flair": "Discussion",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "purch_refund_question_001",
+            "body": "You can request a refund within 14 days if you have less than 2 hours of playtime. Go to your order history on xbox.com.",
+            "author": "RefundHelper",
+            "created_utc": "2024-03-03T14:15:00",
+            "score": 56,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_purch_neg_003",
+      "description": "Celebrating a good sale - NOT an issue, positive sharing",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "purch_sale_celebration_001",
+        "subreddit": "xbox",
+        "title": "Just got 5 amazing games for under $50 in the spring sale!",
+        "body": "The spring sale is incredible this year! I picked up: Elden Ring ($29.99), Hades ($12.49), Hollow Knight ($7.49), Celeste ($4.99), and Ori ($9.99). All for under $50! What deals have you all found?",
+        "author": "SaleHunter",
+        "created_utc": "2024-03-04T16:00:00",
+        "url": "https://reddit.com/r/xbox/comments/purch_sale_celebration_001",
+        "score": 567,
+        "num_comments": 234,
+        "flair": "Deals",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "purch_sale_celebration_001",
+            "body": "Great haul! Hollow Knight is an incredible value at that price. Enjoy!",
+            "author": "DealAppreciator",
+            "created_utc": "2024-03-04T16:15:00",
+            "score": 89,
+            "parent_id": null
+          }
+        ]
+      }
+    },
+    {
+      "test_case_id": "tc_purch_neg_004",
+      "description": "Tips for finding game deals - NOT an issue, helpful advice",
+      "expected_is_issue": false,
+      "expected_category": null,
+      "expected_severity": null,
+      "expected_min_confidence": 0.7,
+      "edge_case_type": null,
+      "post": {
+        "id": "purch_deal_tips_001",
+        "subreddit": "xbox",
+        "title": "Best ways to save money on Xbox games - a guide",
+        "body": "Here are my tips for saving money on Xbox: 1) Use Microsoft Rewards to earn free gift cards. 2) Check deals with Gold every week. 3) Wait for seasonal sales (Black Friday, Spring, Summer). 4) Consider Game Pass instead of buying. 5) Buy from authorized key resellers. 6) Set up price alerts on sites like Deku Deals.",
+        "author": "SavingsExpert",
+        "created_utc": "2024-03-06T12:00:00",
+        "url": "https://reddit.com/r/xbox/comments/purch_deal_tips_001",
+        "score": 892,
+        "num_comments": 345,
+        "flair": "Tips",
+        "comments": [
+          {
+            "id": "c1",
+            "post_id": "purch_deal_tips_001",
+            "body": "Microsoft Rewards is underrated. I get about $10-15 in gift cards per month just from doing searches.",
+            "author": "RewardsUser",
+            "created_utc": "2024-03-06T12:15:00",
+            "score": 156,
             "parent_id": null
           }
         ]
