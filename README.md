@@ -19,8 +19,8 @@ This utility monitors Xbox-related subreddits to detect user-reported issues and
 
 ```
 ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
-│  Reddit Client  │────▶│   LLM Analyzer  │────▶│   ICM Manager   │
-│   (IRedditClient)│     │  (ILLMAnalyzer) │     │  (IICMManager)  │
+│  Reddit Client  │────>│   LLM Analyzer  │────>│   ICM Manager   │
+│  (IRedditClient)│     │  (ILLMAnalyzer) │     │  (IICMManager)  │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
          │                       │                       │
          │                       ▼                       │
