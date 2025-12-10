@@ -7,6 +7,9 @@ from typing import Optional, Dict, Any, List
 
 from src.evaluation.metrics import EvaluationResult, ComparisonResult, ClassificationMetrics
 
+# Default directory for metrics summaries (relative to this module)
+DEFAULT_METRICS_DIR = Path(__file__).parent / "metrics"
+
 class ReportGenerator:
     """Generates evaluation reports in various formats.
     
@@ -328,6 +331,100 @@ class ReportGenerator:
             )
         
         return "\n".join(lines)
+
+
+def generate_metrics_summary(
+    result: EvaluationResult,
+    dataset_filename: str,
+) -> str:
+    """Generate a concise metrics summary markdown report.
+    
+    Args:
+        result: The evaluation result.
+        dataset_filename: Name of the dataset file used.
+        
+    Returns:
+        Markdown formatted string with Precision/Recall/F1 metrics.
+    """
+    lines = []
+    
+    # Header
+    lines.append(f"# Evaluation Metrics: {result.prompt_version}")
+    lines.append("")
+    lines.append(f"**Dataset:** {dataset_filename}")
+    lines.append(f"**Evaluated:** {result.timestamp.strftime('%Y-%m-%d %H:%M:%S UTC')}")
+    lines.append(f"**Total Cases:** {result.total_cases}")
+    lines.append("")
+    
+    # Issue Detection Metrics
+    lines.append("## Issue Detection")
+    lines.append("")
+    lines.append("| Metric | Value |")
+    lines.append("|--------|-------|")
+    lines.append(f"| Precision | {result.issue_classification.precision:.4f} |")
+    lines.append(f"| Recall | {result.issue_classification.recall:.4f} |")
+    lines.append(f"| F1 Score | {result.issue_classification.f1_score:.4f} |")
+    lines.append("")
+    
+    # Category Classification Metrics
+    lines.append("## Category Classification")
+    lines.append("")
+    lines.append("| Metric | Value |")
+    lines.append("|--------|-------|")
+    lines.append(f"| Macro F1 | {result.category_metrics.macro_f1:.4f} |")
+    lines.append("")
+    
+    # Severity Classification Metrics
+    lines.append("## Severity Classification")
+    lines.append("")
+    lines.append("| Metric | Value |")
+    lines.append("|--------|-------|")
+    lines.append(f"| Macro F1 | {result.severity_metrics.macro_f1:.4f} |")
+    lines.append("")
+    
+    # Combined Metrics
+    lines.append("## Combined")
+    lines.append("")
+    lines.append("| Metric | Value |")
+    lines.append("|--------|-------|")
+    lines.append(f"| Combined F1 | {result.combined_f1:.4f} |")
+    lines.append("")
+    
+    return "\n".join(lines)
+
+
+def save_metrics_summary(
+    result: EvaluationResult,
+    dataset_filename: str,
+    metrics_dir: Optional[Path] = None,
+) -> Path:
+    """Save metrics summary to evaluation/metrics/<prompt_version>.md.
+    
+    Args:
+        result: The evaluation result.
+        dataset_filename: Name of the dataset file used.
+        metrics_dir: Directory for metrics files. Defaults to evaluation/metrics.
+        
+    Returns:
+        Path to the saved file.
+    """
+    metrics_dir = metrics_dir or DEFAULT_METRICS_DIR
+    metrics_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Generate safe filename from prompt version
+    version_safe = result.prompt_version.replace("/", "_").replace("\\", "_")
+    filename = f"{version_safe}.md"
+    
+    # Generate content
+    content = generate_metrics_summary(result, dataset_filename)
+    
+    # Save file
+    file_path = metrics_dir / filename
+    with open(file_path, "w", encoding="utf-8") as f:
+        f.write(content)
+    
+    return file_path
+
 
 def print_quick_summary(result: EvaluationResult) -> None:
     """Print a quick summary of evaluation results to console.

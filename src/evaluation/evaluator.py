@@ -1,6 +1,7 @@
 """Core evaluator for prompt quality assessment."""
 
 from abc import ABC, abstractmethod
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Optional
 
 from src.interfaces.llm_analyzer import ILLMAnalyzer
@@ -10,6 +11,7 @@ from src.evaluation.models import (
     EvaluationDataset,
 )
 from src.evaluation.metrics import EvaluationResult, ComparisonResult
+
 
 class IPromptEvaluator(ABC):
     """Abstract interface for prompt evaluation.
@@ -77,6 +79,7 @@ class IPromptEvaluator(ABC):
             Comparison results with rankings.
         """
         pass
+
 
 class PromptEvaluator(IPromptEvaluator):
     """Standard implementation of prompt evaluation.
@@ -226,6 +229,81 @@ class PromptEvaluator(IPromptEvaluator):
             severity_correct=severity_correct,
             confidence_acceptable=confidence_acceptable,
         )
+
+
+class ParallelPromptEvaluator(PromptEvaluator):
+    """Evaluator that processes test cases in parallel using threads.
+    
+    Uses ThreadPoolExecutor to run LLM calls concurrently, which can
+    significantly speed up evaluation for large datasets.
+    
+    Attributes:
+        max_workers: Maximum number of concurrent LLM calls.
+    """
+
+    def __init__(
+        self,
+        confidence_threshold: float = 0.7,
+        verbose: bool = False,
+        max_workers: int = 5,
+    ):
+        """Initialize the parallel evaluator.
+        
+        Args:
+            confidence_threshold: Minimum acceptable confidence score.
+            verbose: Whether to print progress during evaluation.
+            max_workers: Maximum number of concurrent threads (default: 5).
+        """
+        super().__init__(confidence_threshold, verbose)
+        self.max_workers = max_workers
+
+    def evaluate(
+        self,
+        analyzer: ILLMAnalyzer,
+        test_cases: List[LabeledTestCase],
+        prompt_version: str,
+        dataset_name: str = "unknown",
+    ) -> EvaluationResult:
+        """Evaluate using parallel processing with ThreadPoolExecutor."""
+        # Store results with their original indices to preserve order
+        indexed_predictions: List[tuple] = []
+        total = len(test_cases)
+        completed = 0
+        
+        def process_test_case(index: int, test_case: LabeledTestCase):
+            """Process a single test case and return indexed result."""
+            analysis = analyzer.analyze_post(test_case.post)
+            prediction = self._create_prediction(test_case, analysis)
+            return (index, prediction)
+        
+        with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
+            # Submit all tasks
+            futures = {
+                executor.submit(process_test_case, i, tc): i 
+                for i, tc in enumerate(test_cases)
+            }
+            
+            # Collect results as they complete
+            for future in as_completed(futures):
+                index, prediction = future.result()
+                indexed_predictions.append((index, prediction))
+                completed += 1
+                
+                if self.verbose:
+                    test_case_id = test_cases[index].test_case_id
+                    print(f"Completed {completed}/{total}: {test_case_id}")
+        
+        # Sort by original index to preserve order
+        indexed_predictions.sort(key=lambda x: x[0])
+        predictions = [pred for _, pred in indexed_predictions]
+        
+        # Compute and return metrics
+        return EvaluationResult.compute(
+            predictions=predictions,
+            prompt_version=prompt_version,
+            dataset_name=dataset_name,
+        )
+
 
 class BatchPromptEvaluator(PromptEvaluator):
     """Evaluator that uses batch processing for efficiency.

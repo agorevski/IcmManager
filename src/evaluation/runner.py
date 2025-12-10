@@ -10,9 +10,9 @@ from dotenv import load_dotenv
 
 from src.config import AzureOpenAIConfig
 from src.evaluation.models import EvaluationDataset
-from src.evaluation.evaluator import PromptEvaluator, BatchPromptEvaluator
+from src.evaluation.evaluator import PromptEvaluator, BatchPromptEvaluator, ParallelPromptEvaluator
 from src.evaluation.prompt_manager import PromptVersionManager
-from src.evaluation.reports import ReportGenerator, print_quick_summary
+from src.evaluation.reports import ReportGenerator, print_quick_summary, save_metrics_summary
 
 class EvaluationRunner:
     """Orchestrates prompt evaluation runs.
@@ -27,6 +27,7 @@ class EvaluationRunner:
         confidence_threshold: float = 0.7,
         verbose: bool = False,
         output_dir: Optional[Path] = None,
+        parallel: int = 1,
     ):
         """Initialize the evaluation runner.
         
@@ -35,16 +36,30 @@ class EvaluationRunner:
             confidence_threshold: Minimum confidence threshold for evaluation.
             verbose: Whether to print progress during evaluation.
             output_dir: Directory for output reports.
+            parallel: Number of parallel workers for LLM calls (default: 1 = sequential).
         """
         self.config = config
         self.confidence_threshold = confidence_threshold
         self.verbose = verbose
-        self.output_dir = output_dir or Path("results")
+        # Default to src/evaluation/results relative to this module
+        if output_dir is None:
+            self.output_dir = Path(__file__).parent / "results"
+        else:
+            self.output_dir = output_dir
+        self.parallel = parallel
         
-        self.evaluator = PromptEvaluator(
-            confidence_threshold=confidence_threshold,
-            verbose=verbose,
-        )
+        # Use parallel evaluator if parallel > 1, otherwise sequential
+        if parallel > 1:
+            self.evaluator = ParallelPromptEvaluator(
+                confidence_threshold=confidence_threshold,
+                verbose=verbose,
+                max_workers=parallel,
+            )
+        else:
+            self.evaluator = PromptEvaluator(
+                confidence_threshold=confidence_threshold,
+                verbose=verbose,
+            )
         self.prompt_manager = PromptVersionManager()
         self.report_generator = ReportGenerator(output_dir=self.output_dir)
 
@@ -257,8 +272,8 @@ Examples:
     eval_parser.add_argument(
         "--output", "-o",
         type=Path,
-        default=Path("results"),
-        help="Output directory for reports (default: results/)"
+        default=None,
+        help="Output directory for reports (default: src/evaluation/results/)"
     )
     eval_parser.add_argument(
         "--confidence-threshold",
@@ -286,6 +301,12 @@ Examples:
         type=Path,
         help="Path to .env file with Azure credentials"
     )
+    eval_parser.add_argument(
+        "--parallel", "-p",
+        type=int,
+        default=5,
+        help="Number of parallel LLM calls (default: 5, use 1 for sequential)"
+    )
     
     # compare command
     compare_parser = subparsers.add_parser("compare", help="Compare multiple prompt versions")
@@ -309,8 +330,8 @@ Examples:
     compare_parser.add_argument(
         "--output", "-o",
         type=Path,
-        default=Path("results"),
-        help="Output directory for reports (default: results/)"
+        default=None,
+        help="Output directory for reports (default: src/evaluation/results/)"
     )
     compare_parser.add_argument(
         "--verbose",
@@ -342,10 +363,16 @@ Examples:
         sys.exit(1)
     
     # Load environment variables
+    # Default to tests/.env if it exists, otherwise try current directory .env
     if hasattr(args, 'env_file') and args.env_file:
         load_dotenv(args.env_file)
     else:
-        load_dotenv()
+        # Try tests/.env first (common location for credentials)
+        tests_env = Path("tests/.env")
+        if tests_env.exists():
+            load_dotenv(tests_env)
+        else:
+            load_dotenv()  # Fall back to current directory .env
     
     # Execute command
     if args.command == "evaluate":
@@ -353,6 +380,7 @@ Examples:
             confidence_threshold=args.confidence_threshold,
             verbose=args.verbose,
             output_dir=args.output,
+            parallel=args.parallel,
         )
         
         result = runner.run_evaluation(
@@ -361,6 +389,11 @@ Examples:
             output_format=args.format,
             save_report=not args.no_save,
         )
+        
+        # Save metrics summary to evaluation/metrics/<prompt_version>.md
+        dataset_filename = args.dataset.name
+        metrics_path = save_metrics_summary(result, dataset_filename)
+        print(f"Metrics summary saved to: {metrics_path}")
         
         # Check minimum F1 if specified (for CI/CD)
         if args.min_f1 is not None:
