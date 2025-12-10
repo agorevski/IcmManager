@@ -51,17 +51,24 @@ IcmManager/
 │   ├── analyzers/        # LLM analyzer implementations
 │   │   ├── azure_openai_analyzer.py
 │   │   └── prompts.yaml  # LLM prompts (editable without code changes)
+│   ├── evaluation/       # Prompt evaluation framework
+│   │   ├── evaluator.py  # Core evaluation with Precision/Recall/F1
+│   │   ├── prompt_manager.py  # Prompt version management
+│   │   ├── runner.py     # CLI interface
+│   │   └── README.md     # Detailed documentation
 │   ├── tracking/         # Post tracker implementations
 │   ├── logging/          # LLM logging
 │   ├── pipeline/         # Main pipeline orchestrator
 │   └── config.py         # Configuration management
 ├── tests/
 │   ├── test_assets/      # Test fixture data (JSON)
+│   ├── evaluation_datasets/  # Labeled datasets for prompt evaluation
 │   ├── conftest.py       # Pytest fixtures and mocks
 │   ├── test_models.py    # Data model tests
 │   ├── test_tracker.py   # Post tracker tests
 │   ├── test_pipeline.py  # Pipeline orchestrator tests
 │   ├── test_e2e_classification.py  # E2E tests with real Azure OpenAI
+│   ├── test_evaluation.py  # Evaluation framework tests
 │   └── .env.example      # Example test environment config
 ├── logs/                 # LLM interaction logs
 ├── data/                 # SQLite database
@@ -280,6 +287,47 @@ The project uses GitHub Actions for continuous integration. The workflow (`.gith
 - **Linting**: Checks code quality with ruff (non-blocking)
 
 The workflow runs on push/PR to `main`, `master`, and `develop` branches.
+
+## Prompt Evaluation Framework
+
+The `src/evaluation/` module provides a comprehensive framework for testing and fine-tuning LLM prompts used in issue detection.
+
+### Key Capabilities
+
+- **Metrics-Based Evaluation**: Measure prompt quality using Precision, Recall, and F1 scores for issue detection, category classification, and severity classification
+- **Prompt Version Management**: Save, load, and compare multiple prompt versions for A/B testing
+- **Automated Reports**: Generate detailed Markdown or JSON reports with confusion matrices and failure analysis
+- **Optimization Suggestions**: Analyze failures and get automated suggestions for prompt improvements
+
+### Quick Start
+
+```bash
+# Evaluate the current prompt against a golden dataset
+python -m src.evaluation.runner evaluate \
+  --version current \
+  --dataset tests/evaluation_datasets/golden_set_v1.json
+
+# Compare multiple prompt versions
+python -m src.evaluation.runner compare \
+  --versions current,v1_baseline,v2_improved \
+  --dataset tests/evaluation_datasets/golden_set_v1.json
+
+# List available prompt versions
+python -m src.evaluation.runner list-versions
+
+# Validate a dataset file
+python -m src.evaluation.runner validate \
+  --dataset tests/evaluation_datasets/golden_set_v1.json
+```
+
+### Evaluation Datasets
+
+Labeled test datasets are stored in `tests/evaluation_datasets/`. Each dataset contains test cases with:
+- Reddit posts (title, body, comments)
+- Ground truth labels (`expected_is_issue`, `expected_category`, `expected_severity`)
+- Optional edge case annotations
+
+See `src/evaluation/README.md` for complete documentation including dataset format, metrics interpretation, and prompt improvement workflows.
 
 ## Issue Categories
 
