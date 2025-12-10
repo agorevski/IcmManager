@@ -1,0 +1,76 @@
+# Xbox Reddit ICM Manager - Cline Rules
+
+## Project Overview
+This is an automated issue detection utility that monitors Xbox-related Reddit subreddits to detect user-reported issues and automatically creates ICMs (Incident/Case Management tickets) for Microsoft investigation.
+
+## Architecture Principles
+
+### Interface-Based Design
+- All major components must implement abstract interfaces defined in `src/interfaces/`
+- This allows implementations to be swapped without changing dependent code
+- Interfaces: `IRedditClient`, `ILLMAnalyzer`, `IICMManager`, `IPostTracker`
+
+### Component Responsibilities
+- `src/models/` - Data classes only, no business logic
+- `src/interfaces/` - Abstract base classes defining contracts
+- `src/analyzers/` - LLM analyzer implementations
+- `src/tracking/` - Post tracking implementations
+- `src/logging/` - Logging utilities
+- `src/pipeline/` - Orchestration logic
+- `tests/` - Unit tests with pytest
+
+## Coding Standards
+
+### Python Conventions
+- Use Python 3.10+ features
+- Use dataclasses for data models
+- Use type hints for all function signatures
+- Use docstrings for all public classes and methods
+- Follow PEP 8 style guidelines
+
+### File Organization
+- Keep prompts in YAML files (`prompts.yaml`) for maintainability
+- Configuration via environment variables (see `src/config.py`)
+- One class per file when practical
+
+### Testing Requirements
+- All new features must have corresponding unit tests
+- Use pytest fixtures from `tests/conftest.py`
+- Mock external dependencies (Reddit API, Azure OpenAI, ICM API)
+- Tests should pass before committing
+
+## Key Files to Know
+
+### Entry Points
+- `src/pipeline/issue_detector.py` - Main pipeline orchestrator
+- `src/config.py` - Configuration management
+
+### Data Models
+- `src/models/reddit_data.py` - RedditPost, RedditComment
+- `src/models/issue.py` - IssueAnalysis, ICMIssue, AnalyzedPost
+
+### Implementations
+- `src/analyzers/azure_openai_analyzer.py` - LLM analyzer (uses prompts.yaml)
+- `src/tracking/sqlite_tracker.py` - SQLite-based post tracker
+
+## Common Tasks
+
+### Adding a New LLM Provider
+1. Implement `ILLMAnalyzer` interface
+2. Add to `src/analyzers/`
+3. Create corresponding tests
+
+### Modifying LLM Prompts
+1. Edit `src/analyzers/prompts.yaml`
+2. No code changes needed unless adding new prompt keys
+
+### Adding a New Issue Category
+1. Add to `IssueCategory` enum in `src/models/issue.py`
+2. Update prompts in `src/analyzers/prompts.yaml`
+3. Update tests accordingly
+
+## Dependencies
+- `openai` - Azure OpenAI client
+- `pyyaml` - YAML parsing for prompts
+- `pytest` - Testing framework
+- `pytest-cov` - Coverage reporting
