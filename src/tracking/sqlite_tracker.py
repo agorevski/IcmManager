@@ -2,7 +2,7 @@
 
 import json
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional
 
@@ -110,7 +110,7 @@ class SQLitePostTracker(IPostTracker):
             """, (
                 post_id,
                 subreddit,
-                datetime.utcnow().isoformat(),
+                datetime.now(timezone.utc).isoformat(),
                 1 if analysis.is_issue else 0,
                 analysis.confidence,
                 analysis.summary,

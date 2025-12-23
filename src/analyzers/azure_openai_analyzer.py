@@ -11,7 +11,7 @@ from openai import AzureOpenAI
 from src.interfaces.llm_analyzer import ILLMAnalyzer
 from src.models.reddit_data import RedditPost
 from src.models.issue import IssueAnalysis, ICMIssue, IssueCategory, Severity
-from src.logging.llm_logger import LLMLogger
+from src.llm_logging.llm_logger import LLMLogger
 
 # Path to the prompts YAML file
 PROMPTS_FILE = Path(__file__).parent / "prompts.yaml"
@@ -42,6 +42,14 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
         logger: LLM logger for tracking requests/responses.
         prompts: Dictionary containing loaded prompts.
     """
+
+    # Token efficiency limits for truncation
+    MAX_DESCRIPTION_LENGTH = 500
+    MAX_EXISTING_ISSUES_FOR_DUPLICATE_CHECK = 20
+    MAX_POST_BODY_LENGTH = 2000
+    MAX_COMMENT_THREAD_LENGTH = 3000
+    MAX_ICM_POST_BODY_LENGTH = 1000
+    MAX_ICM_COMMENT_LENGTH = 1500
 
     def __init__(
         self,
@@ -180,9 +188,9 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
                 "id": issue.id,
                 "title": issue.title,
                 "category": issue.category,
-                "description": issue.description[:500],  # Truncate for token efficiency
+                "description": issue.description[:self.MAX_DESCRIPTION_LENGTH],
             }
-            for issue in existing_issues[:20]  # Limit to recent issues
+            for issue in existing_issues[:self.MAX_EXISTING_ISSUES_FOR_DUPLICATE_CHECK]
         ], indent=2)
         
         prompt = self.duplicate_check_prompt_template.format(
@@ -244,12 +252,12 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
             parts.append(f"Flair: {post.flair}")
         
         if post.body:
-            parts.append(f"\nPost Body:\n{post.body[:2000]}")  # Truncate long posts
+            parts.append(f"\nPost Body:\n{post.body[:self.MAX_POST_BODY_LENGTH]}")
         
         if post.comments:
             parts.append("\n--- Comments ---")
             comment_text = post.get_comment_thread_text(max_comments=30)
-            parts.append(comment_text[:3000])  # Truncate long comment threads
+            parts.append(comment_text[:self.MAX_COMMENT_THREAD_LENGTH])
         
         return "\n".join(parts)
 

@@ -138,7 +138,7 @@ from src.config import load_config
 from src.pipeline.issue_detector import IssueDetectorPipeline, PipelineConfig
 from src.analyzers.azure_openai_analyzer import AzureOpenAIAnalyzer
 from src.tracking.sqlite_tracker import SQLitePostTracker
-from src.logging.llm_logger import LLMLogger
+from src.llm_logging.llm_logger import LLMLogger
 
 # Load configuration
 config = load_config()

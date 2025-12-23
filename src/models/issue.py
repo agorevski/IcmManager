@@ -1,7 +1,7 @@
 """Data models for issue analysis and ICM management."""
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 from enum import Enum
 
@@ -116,7 +116,7 @@ class ICMIssue:
     source_url: str
     category: str
     tags: List[str] = field(default_factory=list)
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
     status: str = "open"
     source_post_id: Optional[str] = None
 
@@ -142,7 +142,7 @@ class ICMIssue:
         if isinstance(created_at, str):
             created_at = datetime.fromisoformat(created_at)
         elif created_at is None:
-            created_at = datetime.utcnow()
+            created_at = datetime.now(timezone.utc)
             
         return cls(
             id=data["id"],
@@ -200,7 +200,7 @@ class AnalyzedPost:
         if isinstance(analyzed_at, str):
             analyzed_at = datetime.fromisoformat(analyzed_at)
         elif analyzed_at is None:
-            analyzed_at = datetime.utcnow()
+            analyzed_at = datetime.now(timezone.utc)
             
         return cls(
             post_id=data["post_id"],

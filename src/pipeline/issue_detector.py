@@ -2,7 +2,7 @@
 
 import logging
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
 from src.interfaces.reddit_client import IRedditClient
@@ -11,35 +11,12 @@ from src.interfaces.icm_manager import IICMManager
 from src.interfaces.post_tracker import IPostTracker
 from src.models.reddit_data import RedditPost
 from src.models.issue import ICMIssue, IssueAnalysis
+from src.config import PipelineSettings
 
 logger = logging.getLogger(__name__)
 
-@dataclass
-class PipelineConfig:
-    """Configuration for the issue detection pipeline.
-    
-    Attributes:
-        subreddits: List of subreddits to monitor.
-        posts_per_subreddit: Maximum posts to fetch per subreddit.
-        time_filter: Time filter for fetching posts.
-        min_confidence: Minimum confidence threshold for creating ICMs.
-        min_severity: Minimum severity level for creating ICMs.
-        include_rising: Whether to include rising posts.
-        include_hot: Whether to include hot posts.
-        skip_low_engagement: Skip posts with low engagement.
-        min_score: Minimum post score to analyze.
-        min_comments: Minimum number of comments to analyze.
-    """
-    subreddits: List[str] = field(default_factory=lambda: ["xbox"])
-    posts_per_subreddit: int = 100
-    time_filter: str = "hour"
-    min_confidence: float = 0.7
-    min_severity: str = "medium"
-    include_rising: bool = True
-    include_hot: bool = True
-    skip_low_engagement: bool = False
-    min_score: int = 0
-    min_comments: int = 0
+# Backward compatibility alias - use PipelineSettings from config.py
+PipelineConfig = PipelineSettings
 
 @dataclass 
 class PipelineResult:
@@ -85,6 +62,10 @@ class IssueDetectorPipeline:
 
     # Severity ordering for filtering
     SEVERITY_ORDER = {"low": 0, "medium": 1, "high": 2, "critical": 3}
+    
+    # ICM description truncation limits
+    MAX_ICM_POST_BODY_LENGTH = 1000
+    MAX_ICM_COMMENT_LENGTH = 1500
 
     def __init__(
         self,
@@ -115,7 +96,7 @@ class IssueDetectorPipeline:
         Returns:
             PipelineResult with statistics about the run.
         """
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
         result = PipelineResult()
         
         try:
@@ -130,7 +111,7 @@ class IssueDetectorPipeline:
             
             if not new_posts:
                 logger.info("No new posts to analyze")
-                result.run_duration_seconds = (datetime.utcnow() - start_time).total_seconds()
+                result.run_duration_seconds = (datetime.now(timezone.utc) - start_time).total_seconds()
                 return result
             
             # Step 3: Get existing ICM issues for duplicate detection
@@ -152,7 +133,7 @@ class IssueDetectorPipeline:
             logger.error(error_msg)
             result.errors.append(error_msg)
         
-        result.run_duration_seconds = (datetime.utcnow() - start_time).total_seconds()
+        result.run_duration_seconds = (datetime.now(timezone.utc) - start_time).total_seconds()
         logger.info(
             f"Pipeline completed: {result.posts_analyzed} analyzed, "
             f"{result.issues_detected} issues, {result.icms_created} ICMs created "
@@ -172,7 +153,7 @@ class IssueDetectorPipeline:
         Returns:
             PipelineResult with statistics about the run.
         """
-        start_time = datetime.utcnow()
+        start_time = datetime.now(timezone.utc)
         result = PipelineResult()
         result.posts_fetched = len(posts)
         
@@ -181,7 +162,7 @@ class IssueDetectorPipeline:
             new_posts = self._filter_new_posts(posts)
             
             if not new_posts:
-                result.run_duration_seconds = (datetime.utcnow() - start_time).total_seconds()
+                result.run_duration_seconds = (datetime.now(timezone.utc) - start_time).total_seconds()
                 return result
             
             # Get existing issues
@@ -198,7 +179,7 @@ class IssueDetectorPipeline:
         except Exception as e:
             result.errors.append(f"Pipeline error: {e}")
         
-        result.run_duration_seconds = (datetime.utcnow() - start_time).total_seconds()
+        result.run_duration_seconds = (datetime.now(timezone.utc) - start_time).total_seconds()
         return result
 
     def _fetch_posts(self) -> List[RedditPost]:
@@ -375,14 +356,14 @@ class IssueDetectorPipeline:
             lines.extend([
                 "",
                 f"### Body",
-                f"{post.body[:1000]}",
+                f"{post.body[:self.MAX_ICM_POST_BODY_LENGTH]}",
             ])
         
         if post.comments:
             lines.extend([
                 "",
                 f"### Sample Comments",
-                post.get_comment_thread_text(max_comments=10)[:1500],
+                post.get_comment_thread_text(max_comments=10)[:self.MAX_ICM_COMMENT_LENGTH],
             ])
         
         return "\n".join(lines)

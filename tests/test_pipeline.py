@@ -5,7 +5,7 @@ from datetime import datetime
 
 from src.pipeline.issue_detector import IssueDetectorPipeline, PipelineConfig, PipelineResult
 from src.models.issue import IssueAnalysis
-from tests.conftest import MockRedditClient, MockLLMAnalyzer, MockICMManager, InMemoryPostTracker
+from src.testing.mocks import MockRedditClient, MockLLMAnalyzer, MockICMManager, InMemoryPostTracker
 
 class TestPipelineConfig:
     """Tests for PipelineConfig."""

@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List, Optional
 
 from src.interfaces.llm_analyzer import ILLMAnalyzer
+from src.models.issue import IssueAnalysis
 from src.evaluation.models import (
     LabeledTestCase,
     PredictionResult,
@@ -186,7 +187,7 @@ class PromptEvaluator(IPromptEvaluator):
     def _create_prediction(
         self,
         test_case: LabeledTestCase,
-        analysis,
+        analysis: IssueAnalysis,
     ) -> PredictionResult:
         """Create a prediction result from a test case and analysis.
         

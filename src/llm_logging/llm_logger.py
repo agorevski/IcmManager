@@ -4,7 +4,7 @@ import json
 import logging
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional
 
@@ -54,12 +54,12 @@ class LLMLogger:
 
     def _get_log_file_path(self) -> Path:
         """Get the path to the current log file (one file per day)."""
-        today = datetime.utcnow().strftime("%Y-%m-%d")
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         return self.log_dir / f"llm_log_{today}.jsonl"
 
     def _ensure_log_file(self) -> None:
         """Ensure the log file exists and is open."""
-        today = datetime.utcnow().strftime("%Y-%m-%d")
+        today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         if self._current_date != today:
             if self._current_file_handle:
                 self._current_file_handle.close()
@@ -104,7 +104,7 @@ class LLMLogger:
         entry = {
             "type": "request",
             "request_id": request_id,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "model": model,
             "prompt": prompt,
             "prompt_length": len(prompt),
@@ -143,7 +143,7 @@ class LLMLogger:
         entry = {
             "type": "response",
             "request_id": request_id,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "response": response,
             "response_length": len(response),
             "tokens_used": tokens_used,
@@ -176,7 +176,7 @@ class LLMLogger:
         entry = {
             "type": "error",
             "request_id": request_id,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "error_type": type(error).__name__,
             "error_message": str(error),
             "context": context or {},
@@ -211,7 +211,7 @@ class LLMLogger:
         entry = {
             "type": "analysis_result",
             "request_id": request_id,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "post_id": post_id,
             "is_issue": is_issue,
             "confidence": confidence,
@@ -271,3 +271,12 @@ class LLMLogger:
         if self._current_file_handle:
             self._current_file_handle.close()
             self._current_file_handle = None
+
+    def __enter__(self) -> "LLMLogger":
+        """Enter context manager."""
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
+        """Exit context manager and close resources."""
+        self.close()
+        return False
