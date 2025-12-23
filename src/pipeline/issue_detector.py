@@ -1,9 +1,12 @@
 """Main pipeline orchestrator for issue detection."""
 
+import json
 import logging
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import List, Optional
+
+from openai import APIError, APIConnectionError, RateLimitError, APITimeoutError
 
 from src.interfaces.reddit_client import IRedditClient
 from src.interfaces.llm_analyzer import ILLMAnalyzer
@@ -123,13 +126,25 @@ class IssueDetectorPipeline:
                 try:
                     self._process_post(post, existing_issues, result)
                     result.posts_analyzed += 1
-                except Exception as e:
-                    error_msg = f"Error processing post {post.id}: {e}"
+                except (APIError, APIConnectionError, RateLimitError, APITimeoutError) as e:
+                    error_msg = f"API error processing post {post.id}: {e}"
+                    logger.error(error_msg)
+                    result.errors.append(error_msg)
+                except json.JSONDecodeError as e:
+                    error_msg = f"JSON parsing error processing post {post.id}: {e}"
+                    logger.error(error_msg)
+                    result.errors.append(error_msg)
+                except (KeyError, ValueError, TypeError) as e:
+                    error_msg = f"Data error processing post {post.id}: {e}"
                     logger.error(error_msg)
                     result.errors.append(error_msg)
             
-        except Exception as e:
-            error_msg = f"Pipeline error: {e}"
+        except (APIError, APIConnectionError, RateLimitError, APITimeoutError) as e:
+            error_msg = f"Pipeline API error: {e}"
+            logger.error(error_msg)
+            result.errors.append(error_msg)
+        except (ConnectionError, TimeoutError) as e:
+            error_msg = f"Pipeline connection error: {e}"
             logger.error(error_msg)
             result.errors.append(error_msg)
         
@@ -173,11 +188,17 @@ class IssueDetectorPipeline:
                 try:
                     self._process_post(post, existing_issues, result)
                     result.posts_analyzed += 1
-                except Exception as e:
-                    result.errors.append(f"Error processing post {post.id}: {e}")
+                except (APIError, APIConnectionError, RateLimitError, APITimeoutError) as e:
+                    result.errors.append(f"API error processing post {post.id}: {e}")
+                except json.JSONDecodeError as e:
+                    result.errors.append(f"JSON parsing error processing post {post.id}: {e}")
+                except (KeyError, ValueError, TypeError) as e:
+                    result.errors.append(f"Data error processing post {post.id}: {e}")
                     
-        except Exception as e:
-            result.errors.append(f"Pipeline error: {e}")
+        except (APIError, APIConnectionError, RateLimitError, APITimeoutError) as e:
+            result.errors.append(f"Pipeline API error: {e}")
+        except (ConnectionError, TimeoutError) as e:
+            result.errors.append(f"Pipeline connection error: {e}")
         
         result.run_duration_seconds = (datetime.now(timezone.utc) - start_time).total_seconds()
         return result
@@ -238,11 +259,14 @@ class IssueDetectorPipeline:
 
     def _filter_new_posts(self, posts: List[RedditPost]) -> List[RedditPost]:
         """Filter out posts that have already been analyzed."""
-        new_posts = []
-        for post in posts:
-            if not self.post_tracker.is_analyzed(post.id):
-                new_posts.append(post)
-        return new_posts
+        if not posts:
+            return []
+        
+        # Use batch method to check all posts at once (avoids N+1 query pattern)
+        post_ids = [post.id for post in posts]
+        analyzed_status = self.post_tracker.are_analyzed(post_ids)
+        
+        return [post for post in posts if not analyzed_status.get(post.id, False)]
 
     def _process_post(
         self,

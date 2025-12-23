@@ -288,10 +288,10 @@ class TestIssueDetectorPipeline:
         in_memory_tracker,
     ):
         """Test that errors are captured in results."""
-        # Create analyzer that raises an error
+        # Create analyzer that raises an API error
         class ErrorAnalyzer(MockLLMAnalyzer):
             def analyze_post(self, post):
-                raise Exception("LLM API Error")
+                raise ValueError("LLM API Error")
         
         pipeline = IssueDetectorPipeline(
             reddit_client=MockRedditClient(),

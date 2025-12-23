@@ -7,7 +7,8 @@ from pathlib import Path
 from typing import List, Optional
 
 import yaml
-from openai import AzureOpenAI
+from openai import AzureOpenAI, APIError, APIConnectionError, RateLimitError, APITimeoutError
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
 from src.interfaces.llm_analyzer import ILLMAnalyzer
 from src.models.reddit_data import RedditPost
@@ -16,6 +17,14 @@ from src.llm_logging.llm_logger import LLMLogger
 
 # Path to the prompts YAML file
 PROMPTS_FILE = Path(__file__).parent / "prompts.yaml"
+
+# Retry decorator for transient API errors
+_api_retry = retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=4, max=10),
+    retry=retry_if_exception_type((APIConnectionError, RateLimitError, APITimeoutError)),
+    reraise=True
+)
 
 
 def load_prompts(prompts_file: Path = PROMPTS_FILE) -> dict:
@@ -90,6 +99,17 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
         self.system_prompt = self.prompts["system_prompt"]
         self.duplicate_check_prompt_template = self.prompts["duplicate_check_prompt"]
 
+    @_api_retry
+    def _call_llm(self, messages: list, response_format: dict = None):
+        """Make an API call to the LLM with retry logic for transient errors."""
+        return self.client.chat.completions.create(
+            model=self.model,
+            messages=messages,
+            max_completion_tokens=self.max_tokens,
+            temperature=self.temperature,
+            response_format=response_format or {"type": "json_object"},
+        )
+
     def analyze_post(self, post: RedditPost) -> IssueAnalysis:
         """Analyze a Reddit post and its comments to detect issues."""
         request_id = self.logger.generate_request_id()
@@ -110,15 +130,11 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
         start_time = time.time()
         
         try:
-            response = self.client.chat.completions.create(
-                model=self.model,
+            response = self._call_llm(
                 messages=[
                     {"role": "system", "content": self.system_prompt},
                     {"role": "user", "content": user_content},
-                ],
-                max_completion_tokens=self.max_tokens,
-                temperature=self.temperature,
-                response_format={"type": "json_object"},
+                ]
             )
             
             latency_ms = (time.time() - start_time) * 1000
@@ -240,14 +256,10 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
         start_time = time.time()
         
         try:
-            response = self.client.chat.completions.create(
-                model=self.model,
+            response = self._call_llm(
                 messages=[
                     {"role": "user", "content": prompt},
-                ],
-                max_completion_tokens=self.max_tokens,
-                temperature=self.temperature,
-                response_format={"type": "json_object"},
+                ]
             )
             
             latency_ms = (time.time() - start_time) * 1000

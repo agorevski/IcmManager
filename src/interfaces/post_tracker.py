@@ -2,7 +2,7 @@
 
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from src.models.issue import IssueAnalysis, AnalyzedPost
 
@@ -26,6 +26,21 @@ class IPostTracker(ABC):
             
         Returns:
             True if the post has been analyzed, False otherwise.
+        """
+        pass
+
+    @abstractmethod
+    def are_analyzed(self, post_ids: List[str]) -> Dict[str, bool]:
+        """Check if multiple posts have already been analyzed (batch operation).
+        
+        This method is more efficient than calling is_analyzed() for each post
+        individually, as it executes a single database query.
+        
+        Args:
+            post_ids: List of Reddit post IDs to check.
+            
+        Returns:
+            Dictionary mapping post_id to True if analyzed, False otherwise.
         """
         pass
 

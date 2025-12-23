@@ -4,7 +4,7 @@ import json
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from src.interfaces.post_tracker import IPostTracker
 from src.models.issue import IssueAnalysis, AnalyzedPost
@@ -87,6 +87,22 @@ class SQLitePostTracker(IPostTracker):
                 (post_id,)
             )
             return cursor.fetchone() is not None
+
+    def are_analyzed(self, post_ids: List[str]) -> Dict[str, bool]:
+        """Check if multiple posts have already been analyzed (batch operation)."""
+        if not post_ids:
+            return {}
+        
+        with self._get_connection() as conn:
+            # Use parameterized IN clause with placeholders
+            placeholders = ",".join("?" * len(post_ids))
+            cursor = conn.execute(
+                f"SELECT post_id FROM analyzed_posts WHERE post_id IN ({placeholders})",
+                post_ids
+            )
+            analyzed_ids = {row[0] for row in cursor.fetchall()}
+        
+        return {post_id: post_id in analyzed_ids for post_id in post_ids}
 
     def mark_analyzed(
         self,
@@ -190,69 +206,87 @@ class SQLitePostTracker(IPostTracker):
             cursor = conn.execute(query, params)
             return [self._row_to_analyzed_post(row) for row in cursor.fetchall()]
 
+    def _build_where_clause(
+        self,
+        since: Optional[datetime] = None,
+        subreddit: Optional[str] = None,
+        is_issue: Optional[bool] = None,
+        icm_created: Optional[bool] = None
+    ) -> tuple:
+        """Build WHERE clause and parameters for queries.
+        
+        Returns:
+            Tuple of (where_clause_string, params_list)
+        """
+        conditions = []
+        params = []
+        
+        if since:
+            conditions.append("analyzed_at >= ?")
+            params.append(since.isoformat())
+        
+        if subreddit:
+            conditions.append("subreddit = ?")
+            params.append(subreddit)
+        
+        if is_issue is not None:
+            conditions.append("is_issue = ?")
+            params.append(1 if is_issue else 0)
+        
+        if icm_created is not None:
+            conditions.append("icm_created = ?")
+            params.append(1 if icm_created else 0)
+        
+        if conditions:
+            where_clause = "WHERE " + " AND ".join(conditions)
+        else:
+            where_clause = ""
+        
+        return where_clause, params
+
     def get_statistics(
         self,
         since: Optional[datetime] = None,
         subreddit: Optional[str] = None
     ) -> dict:
         """Get statistics about analyzed posts."""
-        base_where = "WHERE 1=1"
-        params = []
-        
-        if since:
-            base_where += " AND analyzed_at >= ?"
-            params.append(since.isoformat())
-        
-        if subreddit:
-            base_where += " AND subreddit = ?"
-            params.append(subreddit)
+        base_where, base_params = self._build_where_clause(since=since, subreddit=subreddit)
+        issue_where, issue_params = self._build_where_clause(since=since, subreddit=subreddit, is_issue=True)
+        icm_where, icm_params = self._build_where_clause(since=since, subreddit=subreddit, icm_created=True)
         
         with self._get_connection() as conn:
             # Total analyzed
-            cursor = conn.execute(
-                f"SELECT COUNT(*) FROM analyzed_posts {base_where}",
-                params
-            )
+            query = f"SELECT COUNT(*) FROM analyzed_posts {base_where}"
+            cursor = conn.execute(query, base_params)
             total_analyzed = cursor.fetchone()[0]
             
             # Issues detected
-            cursor = conn.execute(
-                f"SELECT COUNT(*) FROM analyzed_posts {base_where} AND is_issue = 1",
-                params
-            )
+            query = f"SELECT COUNT(*) FROM analyzed_posts {issue_where}"
+            cursor = conn.execute(query, issue_params)
             issues_detected = cursor.fetchone()[0]
             
             # ICMs created
-            cursor = conn.execute(
-                f"SELECT COUNT(*) FROM analyzed_posts {base_where} AND icm_created = 1",
-                params
-            )
+            query = f"SELECT COUNT(*) FROM analyzed_posts {icm_where}"
+            cursor = conn.execute(query, icm_params)
             icms_created = cursor.fetchone()[0]
             
             # By category
-            cursor = conn.execute(
-                f"""SELECT category, COUNT(*) as count 
-                    FROM analyzed_posts {base_where} AND is_issue = 1
-                    GROUP BY category""",
-                params
-            )
+            query = f"""SELECT category, COUNT(*) as count 
+                FROM analyzed_posts {issue_where}
+                GROUP BY category"""
+            cursor = conn.execute(query, issue_params)
             by_category = {row["category"]: row["count"] for row in cursor.fetchall()}
             
             # By severity
-            cursor = conn.execute(
-                f"""SELECT severity, COUNT(*) as count 
-                    FROM analyzed_posts {base_where} AND is_issue = 1
-                    GROUP BY severity""",
-                params
-            )
+            query = f"""SELECT severity, COUNT(*) as count 
+                FROM analyzed_posts {issue_where}
+                GROUP BY severity"""
+            cursor = conn.execute(query, issue_params)
             by_severity = {row["severity"]: row["count"] for row in cursor.fetchall()}
             
             # Average confidence for detected issues
-            cursor = conn.execute(
-                f"""SELECT AVG(confidence) FROM analyzed_posts 
-                    {base_where} AND is_issue = 1""",
-                params
-            )
+            query = f"SELECT AVG(confidence) FROM analyzed_posts {issue_where}"
+            cursor = conn.execute(query, issue_params)
             avg_confidence = cursor.fetchone()[0] or 0.0
             
             return {

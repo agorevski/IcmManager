@@ -7,7 +7,7 @@ These mocks can be used for:
 """
 
 from datetime import datetime, timezone
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from src.models.reddit_data import RedditPost
 from src.models.issue import IssueAnalysis, ICMIssue, AnalyzedPost
@@ -195,6 +195,11 @@ class InMemoryPostTracker(IPostTracker):
     def is_analyzed(self, post_id: str) -> bool:
         self.calls.append(("is_analyzed", post_id))
         return post_id in self.analyzed_posts
+
+    def are_analyzed(self, post_ids: List[str]) -> Dict[str, bool]:
+        """Check if multiple posts have already been analyzed (batch operation)."""
+        self.calls.append(("are_analyzed", post_ids))
+        return {post_id: post_id in self.analyzed_posts for post_id in post_ids}
     
     def mark_analyzed(
         self,
