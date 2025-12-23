@@ -1,7 +1,7 @@
 """Metrics calculations for prompt evaluation."""
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Dict, Optional, Any
 
 from src.evaluation.models import PredictionResult, FailureCase
@@ -353,7 +353,7 @@ class EvaluationResult:
         return cls(
             prompt_version=prompt_version,
             dataset_name=dataset_name,
-            timestamp=datetime.utcnow(),
+            timestamp=datetime.now(timezone.utc),
             total_cases=len(predictions),
             issue_classification=issue_classification,
             category_metrics=category_metrics,

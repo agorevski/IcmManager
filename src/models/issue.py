@@ -93,6 +93,30 @@ class IssueAnalysis:
             affected_users_estimate=0,
         )
 
+    @classmethod
+    def analysis_error(cls, error: Exception) -> "IssueAnalysis":
+        """Create an analysis indicating an error occurred during analysis.
+        
+        This provides a distinct error state that callers can identify,
+        rather than silently returning a no_issue result.
+        
+        Args:
+            error: The exception that occurred during analysis.
+            
+        Returns:
+            An IssueAnalysis with is_issue=False, confidence=0.0,
+            and an error summary that identifies this as a failure.
+        """
+        return cls(
+            is_issue=False,
+            confidence=0.0,
+            summary=f"Analysis failed: {type(error).__name__}: {error}",
+            category=IssueCategory.OTHER.value,
+            severity=Severity.LOW.value,
+            affected_users_estimate=0,
+            raw_response=None,
+        )
+
 @dataclass
 class ICMIssue:
     """Represents an ICM (Incident/Case Management) issue.

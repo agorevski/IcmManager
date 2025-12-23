@@ -153,8 +153,8 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
             
         except Exception as e:
             self.logger.log_error(request_id, e, {"post_id": post.id})
-            # Return a safe default on error
-            return IssueAnalysis.no_issue()
+            # Return a distinct error state so callers can identify failures
+            return IssueAnalysis.analysis_error(e)
 
     def analyze_posts_batch(
         self, 

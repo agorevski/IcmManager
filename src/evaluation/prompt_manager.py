@@ -1,7 +1,7 @@
 """Prompt version management for A/B testing and iteration."""
 
 import shutil
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Optional, Dict, Any
 
@@ -139,7 +139,7 @@ class PromptVersionManager:
         prompts_with_meta["_metadata"].update({
             "version": version,
             "description": description,
-            "created_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
         })
         
         self._save_yaml(path, prompts_with_meta)
@@ -189,7 +189,7 @@ class PromptVersionManager:
         
         # Backup current if requested
         if backup and current_path.exists():
-            backup_version = f"backup_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}"
+            backup_version = f"backup_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}"
             current_prompts = self.get_current_prompt()
             self.save_version(backup_version, current_prompts, "Automatic backup before promotion")
         

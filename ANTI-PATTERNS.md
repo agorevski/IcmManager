@@ -4,50 +4,6 @@ This document catalogs development anti-patterns identified in the IcmManager re
 
 > **Note:** Items marked with ⏳ are pending (performance-related).
 
----
-
-## 2. Deprecated `datetime.utcnow()` Usage
-
-**Status:** Partially fixed
-
-**Remaining Locations:**
-- `src/evaluation/metrics.py`
-- `src/evaluation/models.py`
-- `src/evaluation/prompt_manager.py`
-
-**Issue:** `datetime.utcnow()` is deprecated in Python 3.12+ and returns a naive datetime without timezone info.
-
-**Recommendation:**
-```python
-from datetime import datetime, timezone
-
-# Change from:
-datetime.utcnow()
-
-# To:
-datetime.now(timezone.utc)
-```
-
----
-
-## 3. Swallowing Exceptions Silently
-
-**Location:** `src/analyzers/azure_openai_analyzer.py`
-
-**Issue:** Exceptions are caught and a default value returned without re-raising or providing visibility into the failure mode.
-
-```python
-except Exception as e:
-    self.logger.log_error(request_id, e, {"post_id": post.id})
-    # Return a safe default on error
-    return IssueAnalysis.no_issue()
-```
-
-**Impact:** Silent failures can mask systematic issues. A post failing analysis looks identical to a post with no issue.
-
-**Recommendation:** Consider raising custom exceptions or returning a distinct error state that callers can handle appropriately.
-
----
 
 ## 4. Broad Exception Catching
 
@@ -141,8 +97,6 @@ def _call_llm(self, messages):
 
 | Priority | Anti-Pattern | Status | Impact |
 |----------|-------------|--------|--------|
-| High | Sequential batch processing | ✅ Fixed | Performance |
 | High | No retry logic for APIs | ⏳ Pending | Reliability |
 | Medium | N+1 query pattern | ⏳ Pending | Performance |
 | Low | Broad exception catching | Noted | Debuggability |
-| Low | Silent exception swallowing | Noted | Debuggability |
