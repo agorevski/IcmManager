@@ -6,31 +6,6 @@ This document catalogs development anti-patterns identified in the IcmManager re
 
 ---
 
-## 1. Sequential Processing Where Parallel is Appropriate ⏳
-
-**Status:** Not fixed (performance optimization)
-
-**Location:** `src/analyzers/azure_openai_analyzer.py`
-
-**Issue:** The `analyze_posts_batch` method processes posts sequentially in a loop despite being named "batch."
-
-```python
-def analyze_posts_batch(self, posts: List[RedditPost]) -> List[IssueAnalysis]:
-    """Analyze multiple posts in batch."""
-    # For now, process sequentially
-    # Could be optimized with async/parallel processing
-    results = []
-    for post in posts:
-        results.append(self.analyze_post(post))
-    return results
-```
-
-**Impact:** Significant performance degradation when processing multiple posts, as each LLM API call blocks the next.
-
-**Recommendation:** Use `asyncio` with `aiohttp` or `concurrent.futures.ThreadPoolExecutor` to parallelize API calls. The `ParallelPromptEvaluator` class already demonstrates this pattern.
-
----
-
 ## 2. Deprecated `datetime.utcnow()` Usage
 
 **Status:** Partially fixed
@@ -166,7 +141,7 @@ def _call_llm(self, messages):
 
 | Priority | Anti-Pattern | Status | Impact |
 |----------|-------------|--------|--------|
-| High | Sequential batch processing | ⏳ Pending | Performance |
+| High | Sequential batch processing | ✅ Fixed | Performance |
 | High | No retry logic for APIs | ⏳ Pending | Reliability |
 | Medium | N+1 query pattern | ⏳ Pending | Performance |
 | Low | Broad exception catching | Noted | Debuggability |

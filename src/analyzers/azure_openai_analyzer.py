@@ -2,6 +2,7 @@
 
 import json
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import List, Optional
 
@@ -155,14 +156,45 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
             # Return a safe default on error
             return IssueAnalysis.no_issue()
 
-    def analyze_posts_batch(self, posts: List[RedditPost]) -> List[IssueAnalysis]:
-        """Analyze multiple posts in batch."""
-        # For now, process sequentially
-        # Could be optimized with async/parallel processing
-        results = []
-        for post in posts:
-            results.append(self.analyze_post(post))
-        return results
+    def analyze_posts_batch(
+        self, 
+        posts: List[RedditPost], 
+        max_workers: int = 5
+    ) -> List[IssueAnalysis]:
+        """Analyze multiple posts in batch using parallel processing.
+        
+        Args:
+            posts: List of Reddit posts to analyze.
+            max_workers: Maximum number of parallel workers for API calls.
+            
+        Returns:
+            List of IssueAnalysis results in the same order as input posts.
+        """
+        if not posts:
+            return []
+        
+        indexed_results: List[tuple] = []
+        
+        def process_post(index: int, post: RedditPost):
+            """Process a single post and return indexed result."""
+            analysis = self.analyze_post(post)
+            return (index, analysis)
+        
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # Submit all tasks
+            futures = {
+                executor.submit(process_post, i, post): i 
+                for i, post in enumerate(posts)
+            }
+            
+            # Collect results as they complete
+            for future in as_completed(futures):
+                index, analysis = future.result()
+                indexed_results.append((index, analysis))
+        
+        # Sort by original index to preserve order
+        indexed_results.sort(key=lambda x: x[0])
+        return [analysis for _, analysis in indexed_results]
 
     def check_duplicate(
         self,
