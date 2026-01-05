@@ -28,7 +28,12 @@ from src.testing.mocks import (
 
 @pytest.fixture
 def sample_comment() -> RedditComment:
-    """Create a sample Reddit comment."""
+    """Create a sample Reddit comment for testing.
+
+    Returns:
+        RedditComment: A sample comment with typical test data including
+            ID, post reference, body text, author, and score.
+    """
     return RedditComment(
         id="comment_123",
         post_id="post_456",
@@ -41,7 +46,12 @@ def sample_comment() -> RedditComment:
 
 @pytest.fixture
 def sample_comments() -> List[RedditComment]:
-    """Create a list of sample comments."""
+    """Create a list of sample Reddit comments for testing.
+
+    Returns:
+        List[RedditComment]: A list of three sample comments simulating
+            a conversation thread with varying scores and parent references.
+    """
     return [
         RedditComment(
             id="c1",
@@ -74,7 +84,15 @@ def sample_comments() -> List[RedditComment]:
 
 @pytest.fixture
 def sample_post(sample_comments) -> RedditPost:
-    """Create a sample Reddit post."""
+    """Create a sample Reddit post representing a technical issue.
+
+    Args:
+        sample_comments: Fixture providing sample comments to attach to the post.
+
+    Returns:
+        RedditPost: A sample post describing an Xbox Live connectivity issue
+            with comments, suitable for testing issue detection.
+    """
     return RedditPost(
         id="post_456",
         subreddit="xbox",
@@ -92,7 +110,12 @@ def sample_post(sample_comments) -> RedditPost:
 
 @pytest.fixture
 def sample_post_no_issue() -> RedditPost:
-    """Create a sample Reddit post that doesn't describe an issue."""
+    """Create a sample Reddit post that doesn't describe an issue.
+
+    Returns:
+        RedditPost: A sample post asking for game recommendations,
+            used to test that non-issue posts are correctly classified.
+    """
     return RedditPost(
         id="post_789",
         subreddit="xbox",
@@ -110,7 +133,12 @@ def sample_post_no_issue() -> RedditPost:
 
 @pytest.fixture
 def sample_issue_analysis() -> IssueAnalysis:
-    """Create a sample issue analysis."""
+    """Create a sample issue analysis result.
+
+    Returns:
+        IssueAnalysis: A sample analysis indicating a detected issue with
+            high confidence, including category, severity, and keywords.
+    """
     return IssueAnalysis(
         is_issue=True,
         confidence=0.92,
@@ -124,7 +152,12 @@ def sample_issue_analysis() -> IssueAnalysis:
 
 @pytest.fixture
 def sample_icm_issue() -> ICMIssue:
-    """Create a sample ICM issue."""
+    """Create a sample ICM issue for testing.
+
+    Returns:
+        ICMIssue: A sample ICM issue with all fields populated,
+            representing an issue created from a Reddit post.
+    """
     return ICMIssue(
         id="ICM-2024-001",
         title="[Reddit] Xbox Live connectivity issues after update",
@@ -144,29 +177,61 @@ def sample_icm_issue() -> ICMIssue:
 
 @pytest.fixture
 def mock_reddit_client(sample_post, sample_post_no_issue) -> MockRedditClient:
-    """Create a mock Reddit client with sample posts."""
+    """Create a mock Reddit client with sample posts.
+
+    Args:
+        sample_post: Fixture providing a sample post with an issue.
+        sample_post_no_issue: Fixture providing a sample post without an issue.
+
+    Returns:
+        MockRedditClient: A mock client pre-loaded with sample posts
+            for testing Reddit data fetching.
+    """
     return MockRedditClient(posts=[sample_post, sample_post_no_issue])
 
 @pytest.fixture
 def mock_llm_analyzer(sample_issue_analysis) -> MockLLMAnalyzer:
-    """Create a mock LLM analyzer."""
+    """Create a mock LLM analyzer with pre-configured responses.
+
+    Args:
+        sample_issue_analysis: Fixture providing a sample analysis result.
+
+    Returns:
+        MockLLMAnalyzer: A mock analyzer configured to return no_issue
+            by default, with a specific analysis set for post_456.
+    """
     analyzer = MockLLMAnalyzer(default_analysis=IssueAnalysis.no_issue())
     analyzer.set_analysis_for_post("post_456", sample_issue_analysis)
     return analyzer
 
 @pytest.fixture
 def mock_icm_manager() -> MockICMManager:
-    """Create a mock ICM manager."""
+    """Create a mock ICM manager for testing.
+
+    Returns:
+        MockICMManager: A mock manager that simulates ICM issue creation
+            and management without making real API calls.
+    """
     return MockICMManager()
 
 @pytest.fixture
 def in_memory_tracker() -> InMemoryPostTracker:
-    """Create an in-memory post tracker."""
+    """Create an in-memory post tracker for testing.
+
+    Returns:
+        InMemoryPostTracker: A tracker that stores post tracking data
+            in memory, suitable for fast tests without database I/O.
+    """
     return InMemoryPostTracker()
 
 @pytest.fixture
 def temp_db_path() -> str:
-    """Create a temporary database path for testing."""
+    """Create a temporary database path for testing.
+
+    Yields:
+        str: Path to a temporary .db file that will be automatically
+            cleaned up after the test completes.
+    """
     with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
         path = f.name
     yield path
@@ -176,16 +241,37 @@ def temp_db_path() -> str:
 
 @pytest.fixture
 def sqlite_tracker(temp_db_path) -> SQLitePostTracker:
-    """Create a SQLite tracker with a temporary database."""
+    """Create a SQLite tracker with a temporary database.
+
+    Args:
+        temp_db_path: Fixture providing a temporary database file path.
+
+    Returns:
+        SQLitePostTracker: A tracker instance using a temporary SQLite
+            database for isolated testing.
+    """
     return SQLitePostTracker(db_path=temp_db_path)
 
 @pytest.fixture
 def temp_log_dir() -> str:
-    """Create a temporary directory for logs."""
+    """Create a temporary directory for logs.
+
+    Yields:
+        str: Path to a temporary directory that will be automatically
+            removed along with its contents after the test completes.
+    """
     with tempfile.TemporaryDirectory() as tmpdir:
         yield tmpdir
 
 @pytest.fixture
 def llm_logger(temp_log_dir) -> LLMLogger:
-    """Create an LLM logger with temporary storage."""
+    """Create an LLM logger with temporary storage.
+
+    Args:
+        temp_log_dir: Fixture providing a temporary directory for log files.
+
+    Returns:
+        LLMLogger: A logger instance configured to write to the temporary
+            directory with console output disabled for test clarity.
+    """
     return LLMLogger(log_dir=temp_log_dir, log_to_console=False)

@@ -27,7 +27,12 @@ class RedditComment:
     parent_id: Optional[str] = None
 
     def to_dict(self) -> dict:
-        """Convert the comment to a dictionary representation."""
+        """Convert the comment to a dictionary representation.
+
+        Returns:
+            dict: A dictionary containing all comment fields with the
+                created_utc converted to ISO format string.
+        """
         return {
             "id": self.id,
             "post_id": self.post_id,
@@ -40,7 +45,17 @@ class RedditComment:
 
     @classmethod
     def from_dict(cls, data: dict) -> "RedditComment":
-        """Create a RedditComment from a dictionary."""
+        """Create a RedditComment from a dictionary.
+
+        Args:
+            data: A dictionary containing comment fields. Must include keys:
+                id, post_id, body, author, created_utc, score. Optional:
+                parent_id.
+
+        Returns:
+            RedditComment: A new RedditComment instance populated from the
+                dictionary data.
+        """
         return cls(
             id=data["id"],
             post_id=data["post_id"],
@@ -82,7 +97,13 @@ class RedditPost:
     flair: Optional[str] = None
 
     def to_dict(self) -> dict:
-        """Convert the post to a dictionary representation."""
+        """Convert the post to a dictionary representation.
+
+        Returns:
+            dict: A dictionary containing all post fields with the
+                created_utc converted to ISO format string and comments
+                converted to dictionaries.
+        """
         return {
             "id": self.id,
             "subreddit": self.subreddit,
@@ -99,7 +120,17 @@ class RedditPost:
 
     @classmethod
     def from_dict(cls, data: dict) -> "RedditPost":
-        """Create a RedditPost from a dictionary."""
+        """Create a RedditPost from a dictionary.
+
+        Args:
+            data: A dictionary containing post fields. Must include keys:
+                id, subreddit, title, body, author, created_utc, url, score.
+                Optional: comments, num_comments, flair.
+
+        Returns:
+            RedditPost: A new RedditPost instance populated from the
+                dictionary data, including any nested comments.
+        """
         comments = [RedditComment.from_dict(c) for c in data.get("comments", [])]
         return cls(
             id=data["id"],
@@ -117,9 +148,10 @@ class RedditPost:
 
     def get_full_text(self) -> str:
         """Get the full text content of the post including title and body.
-        
+
         Returns:
-            Combined title and body text.
+            str: The title and body separated by a blank line if body exists,
+                otherwise just the title.
         """
         if self.body:
             return f"{self.title}\n\n{self.body}"
@@ -127,12 +159,14 @@ class RedditPost:
 
     def get_comment_thread_text(self, max_comments: int = 50) -> str:
         """Get a text representation of the comment thread.
-        
+
         Args:
-            max_comments: Maximum number of comments to include.
-            
+            max_comments: Maximum number of comments to include. Defaults to 50.
+
         Returns:
-            Formatted string of comments.
+            str: A formatted string with each comment showing author, score,
+                and body text, separated by blank lines. Returns empty string
+                if no comments exist.
         """
         if not self.comments:
             return ""

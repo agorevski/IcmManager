@@ -26,7 +26,11 @@ from src.evaluation.evaluator import PromptEvaluator
 
 @pytest.fixture
 def sample_reddit_post() -> RedditPost:
-    """Create a sample Reddit post for testing."""
+    """Create a sample Reddit post for testing.
+
+    Returns:
+        RedditPost: A sample Reddit post with Xbox Live sign-in issue content.
+    """
     return RedditPost(
         id="test_post_001",
         subreddit="xbox",
@@ -51,7 +55,14 @@ def sample_reddit_post() -> RedditPost:
 
 @pytest.fixture
 def positive_test_case(sample_reddit_post) -> LabeledTestCase:
-    """Create a positive (issue) test case."""
+    """Create a positive (issue) test case.
+
+    Args:
+        sample_reddit_post: A sample Reddit post fixture.
+
+    Returns:
+        LabeledTestCase: A test case labeled as a positive issue.
+    """
     return LabeledTestCase(
         test_case_id="tc_001",
         post=sample_reddit_post,
@@ -64,7 +75,11 @@ def positive_test_case(sample_reddit_post) -> LabeledTestCase:
 
 @pytest.fixture
 def negative_test_case() -> LabeledTestCase:
-    """Create a negative (non-issue) test case."""
+    """Create a negative (non-issue) test case.
+
+    Returns:
+        LabeledTestCase: A test case labeled as not an issue.
+    """
     post = RedditPost(
         id="test_post_002",
         subreddit="xbox",
@@ -87,7 +102,11 @@ def negative_test_case() -> LabeledTestCase:
 
 @pytest.fixture
 def correct_analysis() -> IssueAnalysis:
-    """Create a correct issue analysis."""
+    """Create a correct issue analysis.
+
+    Returns:
+        IssueAnalysis: An analysis that correctly identifies an issue.
+    """
     return IssueAnalysis(
         is_issue=True,
         confidence=0.9,
@@ -99,7 +118,11 @@ def correct_analysis() -> IssueAnalysis:
 
 @pytest.fixture
 def incorrect_analysis() -> IssueAnalysis:
-    """Create an incorrect issue analysis (false negative)."""
+    """Create an incorrect issue analysis (false negative).
+
+    Returns:
+        IssueAnalysis: An analysis that incorrectly identifies no issue.
+    """
     return IssueAnalysis(
         is_issue=False,
         confidence=0.8,
@@ -113,7 +136,11 @@ class TestLabeledTestCase:
     """Tests for LabeledTestCase model."""
 
     def test_to_dict(self, positive_test_case):
-        """Test serialization to dictionary."""
+        """Test serialization to dictionary.
+
+        Args:
+            positive_test_case: A positive test case fixture.
+        """
         data = positive_test_case.to_dict()
         
         assert data["test_case_id"] == "tc_001"
@@ -123,7 +150,11 @@ class TestLabeledTestCase:
         assert "post" in data
 
     def test_from_dict(self, positive_test_case):
-        """Test deserialization from dictionary."""
+        """Test deserialization from dictionary.
+
+        Args:
+            positive_test_case: A positive test case fixture.
+        """
         data = positive_test_case.to_dict()
         restored = LabeledTestCase.from_dict(data)
         
@@ -137,7 +168,12 @@ class TestPredictionResult:
     """Tests for PredictionResult model."""
 
     def test_true_positive(self, positive_test_case, correct_analysis):
-        """Test true positive detection."""
+        """Test true positive detection.
+
+        Args:
+            positive_test_case: A positive test case fixture.
+            correct_analysis: A correct issue analysis fixture.
+        """
         pred = PredictionResult(
             test_case=positive_test_case,
             analysis=correct_analysis,
@@ -154,7 +190,12 @@ class TestPredictionResult:
         assert pred.is_fully_correct is True
 
     def test_false_negative(self, positive_test_case, incorrect_analysis):
-        """Test false negative detection."""
+        """Test false negative detection.
+
+        Args:
+            positive_test_case: A positive test case fixture.
+            incorrect_analysis: An incorrect issue analysis fixture.
+        """
         pred = PredictionResult(
             test_case=positive_test_case,
             analysis=incorrect_analysis,
@@ -169,7 +210,12 @@ class TestPredictionResult:
         assert pred.is_fully_correct is False
 
     def test_false_positive(self, negative_test_case, correct_analysis):
-        """Test false positive detection."""
+        """Test false positive detection.
+
+        Args:
+            negative_test_case: A negative test case fixture.
+            correct_analysis: A correct issue analysis fixture.
+        """
         pred = PredictionResult(
             test_case=negative_test_case,
             analysis=correct_analysis,  # Says it's an issue when it's not
@@ -183,7 +229,12 @@ class TestPredictionResult:
         assert pred.is_false_negative is False
 
     def test_wrong_category_not_fully_correct(self, positive_test_case, correct_analysis):
-        """Test that wrong category means not fully correct."""
+        """Test that wrong category means not fully correct.
+
+        Args:
+            positive_test_case: A positive test case fixture.
+            correct_analysis: A correct issue analysis fixture.
+        """
         pred = PredictionResult(
             test_case=positive_test_case,
             analysis=correct_analysis,
@@ -200,7 +251,12 @@ class TestFailureCase:
     """Tests for FailureCase model."""
 
     def test_from_correct_prediction_returns_none(self, positive_test_case, correct_analysis):
-        """Test that correct predictions don't create failure cases."""
+        """Test that correct predictions don't create failure cases.
+
+        Args:
+            positive_test_case: A positive test case fixture.
+            correct_analysis: A correct issue analysis fixture.
+        """
         pred = PredictionResult(
             test_case=positive_test_case,
             analysis=correct_analysis,
@@ -214,7 +270,12 @@ class TestFailureCase:
         assert failure is None
 
     def test_false_positive_failure(self, negative_test_case, correct_analysis):
-        """Test false positive failure case creation."""
+        """Test false positive failure case creation.
+
+        Args:
+            negative_test_case: A negative test case fixture.
+            correct_analysis: A correct issue analysis fixture.
+        """
         pred = PredictionResult(
             test_case=negative_test_case,
             analysis=correct_analysis,
@@ -227,7 +288,12 @@ class TestFailureCase:
         assert failure.failure_type == FailureCase.FALSE_POSITIVE
 
     def test_false_negative_failure(self, positive_test_case, incorrect_analysis):
-        """Test false negative failure case creation."""
+        """Test false negative failure case creation.
+
+        Args:
+            positive_test_case: A positive test case fixture.
+            incorrect_analysis: An incorrect issue analysis fixture.
+        """
         pred = PredictionResult(
             test_case=positive_test_case,
             analysis=incorrect_analysis,
@@ -244,7 +310,10 @@ class TestClassificationMetrics:
     """Tests for ClassificationMetrics calculations."""
 
     def test_perfect_classification(self):
-        """Test metrics for perfect classification."""
+        """Test metrics for perfect classification.
+
+        Verifies that all metrics equal 1.0 when there are no errors.
+        """
         metrics = ClassificationMetrics(tp=10, tn=10, fp=0, fn=0)
         
         assert metrics.precision == 1.0
@@ -253,21 +322,30 @@ class TestClassificationMetrics:
         assert metrics.accuracy == 1.0
 
     def test_precision_calculation(self):
-        """Test precision calculation."""
+        """Test precision calculation.
+
+        Verifies precision = TP / (TP + FP) = 8 / 10 = 0.8.
+        """
         metrics = ClassificationMetrics(tp=8, tn=5, fp=2, fn=5)
         
         # Precision = TP / (TP + FP) = 8 / 10 = 0.8
         assert metrics.precision == 0.8
 
     def test_recall_calculation(self):
-        """Test recall calculation."""
+        """Test recall calculation.
+
+        Verifies recall = TP / (TP + FN) = 8 / 10 = 0.8.
+        """
         metrics = ClassificationMetrics(tp=8, tn=5, fp=2, fn=2)
         
         # Recall = TP / (TP + FN) = 8 / 10 = 0.8
         assert metrics.recall == 0.8
 
     def test_f1_calculation(self):
-        """Test F1 score calculation."""
+        """Test F1 score calculation.
+
+        Verifies F1 = 2 * P * R / (P + R) = 0.8 when P = R = 0.8.
+        """
         metrics = ClassificationMetrics(tp=8, tn=5, fp=2, fn=2)
         
         # F1 = 2 * P * R / (P + R)
@@ -276,7 +354,10 @@ class TestClassificationMetrics:
         assert abs(metrics.f1_score - 0.8) < 1e-10
 
     def test_zero_division_handling(self):
-        """Test that zero division is handled."""
+        """Test that zero division is handled.
+
+        Verifies metrics return 0.0 instead of raising ZeroDivisionError.
+        """
         metrics = ClassificationMetrics(tp=0, tn=10, fp=0, fn=0)
         
         assert metrics.precision == 0.0
@@ -284,7 +365,14 @@ class TestClassificationMetrics:
         assert metrics.f1_score == 0.0
 
     def test_from_predictions(self, positive_test_case, negative_test_case, correct_analysis, incorrect_analysis):
-        """Test creating metrics from predictions."""
+        """Test creating metrics from predictions.
+
+        Args:
+            positive_test_case: A positive test case fixture.
+            negative_test_case: A negative test case fixture.
+            correct_analysis: A correct issue analysis fixture.
+            incorrect_analysis: An incorrect issue analysis fixture.
+        """
         predictions = [
             PredictionResult(
                 test_case=positive_test_case,
@@ -310,7 +398,10 @@ class TestCategoryMetrics:
     """Tests for CategoryMetrics calculations."""
 
     def test_add_prediction(self):
-        """Test adding predictions to confusion matrix."""
+        """Test adding predictions to confusion matrix.
+
+        Verifies predictions are correctly added to the confusion matrix.
+        """
         metrics = CategoryMetrics()
         metrics.add_prediction("connectivity", "connectivity")
         metrics.add_prediction("connectivity", "account")
@@ -323,7 +414,10 @@ class TestCategoryMetrics:
         assert "account" in metrics.labels
 
     def test_perfect_accuracy(self):
-        """Test accuracy with perfect predictions."""
+        """Test accuracy with perfect predictions.
+
+        Verifies accuracy equals 1.0 when all predictions are correct.
+        """
         metrics = CategoryMetrics()
         for _ in range(5):
             metrics.add_prediction("connectivity", "connectivity")
@@ -333,7 +427,10 @@ class TestCategoryMetrics:
         assert metrics.accuracy == 1.0
 
     def test_macro_f1(self):
-        """Test macro F1 calculation."""
+        """Test macro F1 calculation.
+
+        Verifies macro F1 equals 1.0 when all categories are predicted correctly.
+        """
         metrics = CategoryMetrics()
         # All correct for category A
         for _ in range(10):
@@ -349,7 +446,11 @@ class TestEvaluationDataset:
     """Tests for EvaluationDataset."""
 
     def test_load_from_file(self, tmp_path):
-        """Test loading dataset from JSON file."""
+        """Test loading dataset from JSON file.
+
+        Args:
+            tmp_path: Pytest fixture providing a temporary directory path.
+        """
         dataset_data = {
             "version": "1.0",
             "description": "Test dataset",
@@ -389,7 +490,12 @@ class TestEvaluationDataset:
         assert dataset.test_cases[0].test_case_id == "tc_001"
 
     def test_positive_negative_counts(self, positive_test_case, negative_test_case):
-        """Test counting positive and negative cases."""
+        """Test counting positive and negative cases.
+
+        Args:
+            positive_test_case: A positive test case fixture.
+            negative_test_case: A negative test case fixture.
+        """
         dataset = EvaluationDataset(
             version="1.0",
             description="Test",
@@ -402,7 +508,12 @@ class TestEvaluationDataset:
         assert dataset.negative_count == 1
 
     def test_category_distribution(self, positive_test_case, negative_test_case):
-        """Test category distribution calculation."""
+        """Test category distribution calculation.
+
+        Args:
+            positive_test_case: A positive test case fixture.
+            negative_test_case: A negative test case fixture.
+        """
         dataset = EvaluationDataset(
             version="1.0",
             description="Test",
@@ -419,7 +530,12 @@ class TestPromptEvaluator:
     """Tests for PromptEvaluator."""
 
     def test_evaluate_with_mock_analyzer(self, positive_test_case, correct_analysis):
-        """Test evaluation with a mocked analyzer."""
+        """Test evaluation with a mocked analyzer.
+
+        Args:
+            positive_test_case: A positive test case fixture.
+            correct_analysis: A correct issue analysis fixture.
+        """
         mock_analyzer = MagicMock()
         mock_analyzer.analyze_post.return_value = correct_analysis
         
@@ -436,7 +552,12 @@ class TestPromptEvaluator:
         assert result.prompt_version == "test_v1"
 
     def test_category_matching_case_insensitive(self, positive_test_case, correct_analysis):
-        """Test that category matching is case-insensitive."""
+        """Test that category matching is case-insensitive.
+
+        Args:
+            positive_test_case: A positive test case fixture.
+            correct_analysis: A correct issue analysis fixture (unused but required).
+        """
         # Create analysis with different case
         analysis = IssueAnalysis(
             is_issue=True,
@@ -457,7 +578,12 @@ class TestEvaluationResult:
     """Tests for EvaluationResult."""
 
     def test_combined_f1_calculation(self, positive_test_case, correct_analysis):
-        """Test combined F1 calculation."""
+        """Test combined F1 calculation.
+
+        Args:
+            positive_test_case: A positive test case fixture.
+            correct_analysis: A correct issue analysis fixture.
+        """
         pred = PredictionResult(
             test_case=positive_test_case,
             analysis=correct_analysis,
@@ -478,7 +604,14 @@ class TestEvaluationResult:
         assert result.combined_f1 > 0  # Will be average with category/severity
 
     def test_failure_breakdown(self, positive_test_case, negative_test_case, incorrect_analysis, correct_analysis):
-        """Test failure breakdown calculation."""
+        """Test failure breakdown calculation.
+
+        Args:
+            positive_test_case: A positive test case fixture.
+            negative_test_case: A negative test case fixture.
+            incorrect_analysis: An incorrect issue analysis fixture.
+            correct_analysis: A correct issue analysis fixture.
+        """
         predictions = [
             PredictionResult(
                 test_case=positive_test_case,
@@ -509,7 +642,10 @@ class TestComparisonResult:
     """Tests for ComparisonResult."""
 
     def test_best_version_selection(self):
-        """Test that best version is correctly identified."""
+        """Test that best version is correctly identified.
+
+        Verifies the version with highest combined F1 is selected as best.
+        """
         # Create mock results with different F1 scores
         result1 = MagicMock()
         result1.combined_f1 = 0.8
@@ -528,7 +664,10 @@ class TestComparisonResult:
         assert comparison.best_version == "v2"
 
     def test_rankings(self):
-        """Test version rankings."""
+        """Test version rankings.
+
+        Verifies versions are ranked in descending order by combined F1.
+        """
         result1 = MagicMock()
         result1.combined_f1 = 0.8
         

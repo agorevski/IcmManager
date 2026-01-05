@@ -36,7 +36,11 @@ class PromptSuggestion:
     affected_failures: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary."""
+        """Convert the suggestion to a dictionary representation.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing all suggestion attributes.
+        """
         return {
             "suggestion_type": self.suggestion_type,
             "description": self.description,
@@ -67,7 +71,12 @@ class PromptOptimizationResult:
     estimated_improvement: float = 0.0
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary."""
+        """Convert the optimization result to a dictionary representation.
+
+        Returns:
+            Dict[str, Any]: A dictionary containing all optimization result attributes,
+                with suggestions converted to their dictionary representations.
+        """
         return {
             "failure_patterns": self.failure_patterns,
             "suggestions": [s.to_dict() for s in self.suggestions],
@@ -78,7 +87,15 @@ class PromptOptimizationResult:
         }
 
     def to_markdown(self) -> str:
-        """Generate a Markdown report of the optimization results."""
+        """Generate a Markdown report of the optimization results.
+
+        Formats the optimization results into a human-readable Markdown document
+        including overall analysis, failure patterns, suggestions with rationale,
+        category and severity clarifications, and estimated improvement.
+
+        Returns:
+            str: A formatted Markdown string containing the full optimization report.
+        """
         lines = []
         
         lines.append("# Prompt Optimization Suggestions")
@@ -158,7 +175,15 @@ class PromptOptimizer:
         self.prompts = self._load_prompts(prompts_file or OPTIMIZER_PROMPTS_FILE)
 
     def _load_prompts(self, prompts_file: Path) -> Dict[str, str]:
-        """Load optimizer prompts from YAML file."""
+        """Load optimizer prompts from a YAML file.
+
+        Args:
+            prompts_file: Path to the YAML file containing prompt templates.
+
+        Returns:
+            Dict[str, str]: A dictionary mapping prompt names to their templates.
+                If the file doesn't exist, returns default analysis and suggestion prompts.
+        """
         if not prompts_file.exists():
             return {
                 "analysis_prompt": self._get_default_analysis_prompt(),
@@ -229,7 +254,18 @@ class PromptOptimizer:
         )
 
     def _identify_patterns(self, failures: List[FailureCase]) -> List[str]:
-        """Identify common patterns in failures."""
+        """Identify common patterns in evaluation failures.
+
+        Analyzes the list of failures to find recurring issues such as
+        dominant failure types, category confusion, severity misclassification,
+        and low confidence predictions.
+
+        Args:
+            failures: List of failure cases to analyze.
+
+        Returns:
+            List[str]: A list of human-readable pattern descriptions.
+        """
         patterns = []
         
         # Count failure types
@@ -283,7 +319,21 @@ class PromptOptimizer:
         current_prompt: Dict[str, str],
         result: EvaluationResult,
     ) -> List[PromptSuggestion]:
-        """Generate suggestions based on failure analysis."""
+        """Generate prompt improvement suggestions based on failure analysis.
+
+        Analyzes failure patterns to create actionable suggestions for
+        reducing false positives/negatives, improving category distinctions,
+        and calibrating severity assessments.
+
+        Args:
+            failures: List of failure cases to analyze.
+            patterns: Previously identified failure patterns.
+            current_prompt: Current prompt configuration dictionary.
+            result: The full evaluation result containing metrics and breakdowns.
+
+        Returns:
+            List[PromptSuggestion]: A list of specific suggestions for prompt improvement.
+        """
         suggestions = []
         
         # Check for false positives - prompt might be too sensitive
@@ -393,7 +443,18 @@ class PromptOptimizer:
         failures: List[FailureCase],
         current_prompt: Dict[str, str],
     ) -> Dict[str, str]:
-        """Generate clarifications for problematic categories."""
+        """Generate clarifications for categories that caused classification errors.
+
+        Identifies categories that were confused during evaluation and provides
+        specific guidance on how to distinguish between them.
+
+        Args:
+            failures: List of failure cases to analyze.
+            current_prompt: Current prompt configuration dictionary.
+
+        Returns:
+            Dict[str, str]: A mapping from category names to clarification text.
+        """
         clarifications = {}
         
         category_errors = [
@@ -432,7 +493,18 @@ class PromptOptimizer:
         failures: List[FailureCase],
         current_prompt: Dict[str, str],
     ) -> Dict[str, str]:
-        """Generate clarifications for severity levels."""
+        """Generate clarifications for severity level assessment.
+
+        Provides guidance on severity calibration when severity misclassifications
+        are detected in the failures.
+
+        Args:
+            failures: List of failure cases to analyze.
+            current_prompt: Current prompt configuration dictionary.
+
+        Returns:
+            Dict[str, str]: A mapping from severity level or "general" to clarification text.
+        """
         clarifications = {}
         
         severity_errors = [
@@ -455,7 +527,18 @@ class PromptOptimizer:
         result: EvaluationResult,
         patterns: List[str],
     ) -> str:
-        """Generate an overall analysis of prompt performance."""
+        """Generate an overall analysis of prompt performance.
+
+        Creates a summary of the prompt's performance including F1 score,
+        precision/recall issues, and key failure patterns.
+
+        Args:
+            result: The evaluation result containing metrics.
+            patterns: List of identified failure patterns.
+
+        Returns:
+            str: A multi-line analysis string summarizing prompt performance.
+        """
         lines = []
         
         lines.append(f"The prompt achieved a combined F1 score of {result.combined_f1:.2%}.")
@@ -486,7 +569,18 @@ class PromptOptimizer:
         suggestions: List[PromptSuggestion],
         result: EvaluationResult,
     ) -> float:
-        """Estimate potential F1 improvement from suggestions."""
+        """Estimate potential F1 improvement from applying suggestions.
+
+        Uses a heuristic based on the number of affected failures and
+        suggestion confidence to estimate potential improvement.
+
+        Args:
+            suggestions: List of generated prompt suggestions.
+            result: The evaluation result for calculating improvement potential.
+
+        Returns:
+            float: Estimated F1 improvement as a fraction (0.0 to 0.15 max).
+        """
         if not suggestions:
             return 0.0
         
@@ -502,7 +596,12 @@ class PromptOptimizer:
         return min(improvement, 0.15)
 
     def _get_default_analysis_prompt(self) -> str:
-        """Get the default analysis prompt."""
+        """Get the default analysis prompt template.
+
+        Returns:
+            str: A prompt template for analyzing evaluation failures,
+                with placeholders for failure data.
+        """
         return """Analyze the following evaluation failures and identify patterns:
 
 {failures}
@@ -516,7 +615,12 @@ Identify:
 Respond with a structured analysis."""
 
     def _get_default_suggestion_prompt(self) -> str:
-        """Get the default suggestion prompt."""
+        """Get the default suggestion prompt template.
+
+        Returns:
+            str: A prompt template for generating improvement suggestions,
+                with placeholders for current prompt and patterns.
+        """
         return """Based on the following failure patterns and current prompt, suggest improvements:
 
 Current Prompt:

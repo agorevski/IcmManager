@@ -64,7 +64,12 @@ class EvaluationRunner:
         self.report_generator = ReportGenerator(output_dir=self.output_dir)
 
     def _get_config(self) -> AzureOpenAIConfig:
-        """Get or load Azure OpenAI configuration."""
+        """Get or load Azure OpenAI configuration.
+
+        Returns:
+            AzureOpenAIConfig: The Azure OpenAI configuration, either from
+                the instance or loaded from environment variables.
+        """
         if self.config:
             return self.config
         return AzureOpenAIConfig.from_env()
@@ -77,15 +82,16 @@ class EvaluationRunner:
         save_report: bool = True,
     ):
         """Run evaluation for a single prompt version.
-        
+
         Args:
             prompt_version: Version to evaluate ("current" or version name).
             dataset_path: Path to the evaluation dataset JSON.
             output_format: Report format ("markdown" or "json").
             save_report: Whether to save the report to a file.
-            
+
         Returns:
-            EvaluationResult with metrics and predictions.
+            EvaluationResult: The evaluation result containing metrics,
+                predictions, and detailed analysis.
         """
         if self.verbose:
             print(f"Loading dataset from {dataset_path}...")
@@ -137,15 +143,16 @@ class EvaluationRunner:
         save_report: bool = True,
     ):
         """Compare multiple prompt versions.
-        
+
         Args:
             prompt_versions: List of versions to compare.
             dataset_path: Path to the evaluation dataset JSON.
             output_format: Report format ("markdown" or "json").
             save_report: Whether to save the report to a file.
-            
+
         Returns:
-            ComparisonResult with rankings and metrics.
+            ComparisonResult: The comparison result containing rankings,
+                best version, and per-version metrics.
         """
         if self.verbose:
             print(f"Loading dataset from {dataset_path}...")
@@ -198,7 +205,12 @@ class EvaluationRunner:
         return comparison
 
     def list_versions(self) -> List[str]:
-        """List available prompt versions."""
+        """List available prompt versions.
+
+        Returns:
+            List[str]: A list of version names, with "current" always
+                included as the first element.
+        """
         versions = self.prompt_manager.list_versions()
         versions.insert(0, "current")  # Always include current
         return versions
@@ -228,7 +240,16 @@ class EvaluationRunner:
             return False
 
 def main():
-    """CLI entry point for prompt evaluation."""
+    """CLI entry point for prompt evaluation.
+
+    Parses command-line arguments and executes the appropriate evaluation
+    command (evaluate, compare, list-versions, or validate). Handles
+    environment variable loading and report generation.
+
+    Raises:
+        SystemExit: With code 0 on success, 1 on validation failure or
+            when F1 score is below the minimum threshold.
+    """
     parser = argparse.ArgumentParser(
         description="Evaluate LLM prompts for Xbox issue detection",
         formatter_class=argparse.RawDescriptionHelpFormatter,

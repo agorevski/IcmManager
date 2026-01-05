@@ -53,12 +53,20 @@ class LLMLogger:
         self._current_file_handle = None
 
     def _get_log_file_path(self) -> Path:
-        """Get the path to the current log file (one file per day)."""
+        """Get the path to the current log file (one file per day).
+
+        Returns:
+            Path object pointing to today's log file.
+        """
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         return self.log_dir / f"llm_log_{today}.jsonl"
 
     def _ensure_log_file(self) -> None:
-        """Ensure the log file exists and is open."""
+        """Ensure the log file exists and is open.
+
+        Checks if the date has changed and closes the old file handle
+        if necessary to prepare for a new day's log file.
+        """
         today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
         if self._current_date != today:
             if self._current_file_handle:
@@ -67,7 +75,11 @@ class LLMLogger:
             self._current_file_handle = None
 
     def _write_log_entry(self, entry: Dict[str, Any]) -> None:
-        """Write a log entry to the current log file."""
+        """Write a log entry to the current log file.
+
+        Args:
+            entry: Dictionary containing the log entry data to write.
+        """
         self._ensure_log_file()
         log_path = self._get_log_file_path()
         
@@ -273,10 +285,23 @@ class LLMLogger:
             self._current_file_handle = None
 
     def __enter__(self) -> "LLMLogger":
-        """Enter context manager."""
+        """Enter context manager.
+
+        Returns:
+            The LLMLogger instance.
+        """
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
-        """Exit context manager and close resources."""
+        """Exit context manager and close resources.
+
+        Args:
+            exc_type: Exception type if an exception was raised.
+            exc_val: Exception value if an exception was raised.
+            exc_tb: Exception traceback if an exception was raised.
+
+        Returns:
+            False to propagate any exceptions.
+        """
         self.close()
         return False

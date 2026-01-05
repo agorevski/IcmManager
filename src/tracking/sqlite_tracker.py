@@ -31,13 +31,22 @@ class SQLitePostTracker(IPostTracker):
         self._init_database()
 
     def _get_connection(self) -> sqlite3.Connection:
-        """Get a database connection with row factory."""
+        """Get a database connection with row factory.
+
+        Returns:
+            sqlite3.Connection: A connection to the SQLite database with
+                Row factory enabled for dict-like row access.
+        """
         conn = sqlite3.connect(str(self.db_path))
         conn.row_factory = sqlite3.Row
         return conn
 
     def _init_database(self) -> None:
-        """Initialize the database schema."""
+        """Initialize the database schema.
+
+        Creates the analyzed_posts table and indexes if they don't exist.
+        This method is called automatically during initialization.
+        """
         with self._get_connection() as conn:
             conn.execute("""
                 CREATE TABLE IF NOT EXISTS analyzed_posts (
@@ -80,7 +89,14 @@ class SQLitePostTracker(IPostTracker):
             conn.commit()
 
     def is_analyzed(self, post_id: str) -> bool:
-        """Check if a post has already been analyzed."""
+        """Check if a post has already been analyzed.
+
+        Args:
+            post_id: The unique identifier of the post to check.
+
+        Returns:
+            bool: True if the post has been analyzed, False otherwise.
+        """
         with self._get_connection() as conn:
             cursor = conn.execute(
                 "SELECT 1 FROM analyzed_posts WHERE post_id = ?",
@@ -89,7 +105,15 @@ class SQLitePostTracker(IPostTracker):
             return cursor.fetchone() is not None
 
     def are_analyzed(self, post_ids: List[str]) -> Dict[str, bool]:
-        """Check if multiple posts have already been analyzed (batch operation)."""
+        """Check if multiple posts have already been analyzed (batch operation).
+
+        Args:
+            post_ids: List of post identifiers to check.
+
+        Returns:
+            Dict[str, bool]: A dictionary mapping each post_id to a boolean
+                indicating whether it has been analyzed.
+        """
         if not post_ids:
             return {}
         
@@ -114,7 +138,17 @@ class SQLitePostTracker(IPostTracker):
         post_title: Optional[str] = None,
         post_url: Optional[str] = None
     ) -> None:
-        """Record that a post has been analyzed."""
+        """Record that a post has been analyzed.
+
+        Args:
+            post_id: The unique identifier of the post.
+            subreddit: The subreddit where the post was found.
+            analysis: The analysis result containing issue details.
+            icm_created: Whether an ICM ticket was created for this post.
+            icm_id: The ICM ticket identifier if one was created.
+            post_title: The title of the post.
+            post_url: The URL of the post.
+        """
         with self._get_connection() as conn:
             conn.execute("""
                 INSERT OR REPLACE INTO analyzed_posts (
@@ -143,7 +177,15 @@ class SQLitePostTracker(IPostTracker):
             conn.commit()
 
     def get_analyzed_post(self, post_id: str) -> Optional[AnalyzedPost]:
-        """Get the analysis record for a specific post."""
+        """Get the analysis record for a specific post.
+
+        Args:
+            post_id: The unique identifier of the post to retrieve.
+
+        Returns:
+            Optional[AnalyzedPost]: The analyzed post record if found,
+                None otherwise.
+        """
         with self._get_connection() as conn:
             cursor = conn.execute(
                 "SELECT * FROM analyzed_posts WHERE post_id = ?",
@@ -162,7 +204,17 @@ class SQLitePostTracker(IPostTracker):
         subreddit: Optional[str] = None,
         limit: int = 1000
     ) -> List[AnalyzedPost]:
-        """Retrieve history of analyzed posts."""
+        """Retrieve history of analyzed posts.
+
+        Args:
+            since: Only return posts analyzed after this datetime.
+            subreddit: Filter results to a specific subreddit.
+            limit: Maximum number of results to return.
+
+        Returns:
+            List[AnalyzedPost]: List of analyzed post records, ordered by
+                analyzed_at descending.
+        """
         query = "SELECT * FROM analyzed_posts WHERE 1=1"
         params = []
         
@@ -187,7 +239,17 @@ class SQLitePostTracker(IPostTracker):
         subreddit: Optional[str] = None,
         limit: int = 1000
     ) -> List[AnalyzedPost]:
-        """Get posts where issues were detected."""
+        """Get posts where issues were detected.
+
+        Args:
+            since: Only return posts analyzed after this datetime.
+            subreddit: Filter results to a specific subreddit.
+            limit: Maximum number of results to return.
+
+        Returns:
+            List[AnalyzedPost]: List of analyzed post records where is_issue
+                is True, ordered by analyzed_at descending.
+        """
         query = "SELECT * FROM analyzed_posts WHERE is_issue = 1"
         params = []
         
@@ -214,9 +276,17 @@ class SQLitePostTracker(IPostTracker):
         icm_created: Optional[bool] = None
     ) -> tuple:
         """Build WHERE clause and parameters for queries.
-        
+
+        Args:
+            since: Filter for records analyzed after this datetime.
+            subreddit: Filter for a specific subreddit.
+            is_issue: Filter for posts that are/aren't issues.
+            icm_created: Filter for posts with/without ICM tickets.
+
         Returns:
-            Tuple of (where_clause_string, params_list)
+            tuple: A tuple of (where_clause_string, params_list) where
+                where_clause_string is the SQL WHERE clause and params_list
+                contains the corresponding parameter values.
         """
         conditions = []
         params = []
@@ -249,7 +319,21 @@ class SQLitePostTracker(IPostTracker):
         since: Optional[datetime] = None,
         subreddit: Optional[str] = None
     ) -> dict:
-        """Get statistics about analyzed posts."""
+        """Get statistics about analyzed posts.
+
+        Args:
+            since: Only include posts analyzed after this datetime.
+            subreddit: Filter statistics to a specific subreddit.
+
+        Returns:
+            dict: A dictionary containing:
+                - total_analyzed: Total number of analyzed posts.
+                - issues_detected: Number of posts with detected issues.
+                - icms_created: Number of ICM tickets created.
+                - by_category: Issue counts grouped by category.
+                - by_severity: Issue counts grouped by severity.
+                - average_confidence: Average confidence score for issues.
+        """
         base_where, base_params = self._build_where_clause(since=since, subreddit=subreddit)
         issue_where, issue_params = self._build_where_clause(since=since, subreddit=subreddit, is_issue=True)
         icm_where, icm_params = self._build_where_clause(since=since, subreddit=subreddit, icm_created=True)
@@ -299,7 +383,14 @@ class SQLitePostTracker(IPostTracker):
             }
 
     def cleanup_old_records(self, older_than: datetime) -> int:
-        """Remove old analysis records to manage storage."""
+        """Remove old analysis records to manage storage.
+
+        Args:
+            older_than: Delete records analyzed before this datetime.
+
+        Returns:
+            int: The number of records deleted.
+        """
         with self._get_connection() as conn:
             cursor = conn.execute(
                 "DELETE FROM analyzed_posts WHERE analyzed_at < ?",
@@ -310,7 +401,15 @@ class SQLitePostTracker(IPostTracker):
             return deleted
 
     def _row_to_analyzed_post(self, row: sqlite3.Row) -> AnalyzedPost:
-        """Convert a database row to an AnalyzedPost object."""
+        """Convert a database row to an AnalyzedPost object.
+
+        Args:
+            row: A sqlite3.Row object from a query result.
+
+        Returns:
+            AnalyzedPost: The converted AnalyzedPost object with nested
+                IssueAnalysis.
+        """
         keywords = json.loads(row["keywords"]) if row["keywords"] else []
         
         analysis = IssueAnalysis(

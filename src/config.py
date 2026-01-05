@@ -26,7 +26,11 @@ class AzureOpenAIConfig:
 
     @classmethod
     def from_env(cls) -> "AzureOpenAIConfig":
-        """Create config from environment variables."""
+        """Create config from environment variables.
+
+        Returns:
+            AzureOpenAIConfig: A new instance populated from environment variables.
+        """
         return cls(
             endpoint=os.getenv("AZURE_OPENAI_ENDPOINT", ""),
             api_key=os.getenv("AZURE_OPENAI_API_KEY", ""),
@@ -38,9 +42,9 @@ class AzureOpenAIConfig:
 
     def validate(self) -> List[str]:
         """Validate the configuration.
-        
+
         Returns:
-            List of validation error messages, empty if valid.
+            List[str]: Validation error messages, empty if valid.
         """
         errors = []
         if not self.endpoint:
@@ -66,7 +70,11 @@ class StorageConfig:
 
     @classmethod
     def from_env(cls) -> "StorageConfig":
-        """Create config from environment variables."""
+        """Create config from environment variables.
+
+        Returns:
+            StorageConfig: A new instance populated from environment variables.
+        """
         return cls(
             data_dir=os.getenv("ICM_DATA_DIR", "data"),
             logs_dir=os.getenv("ICM_LOGS_DIR", "logs"),
@@ -75,11 +83,19 @@ class StorageConfig:
 
     @property
     def db_path(self) -> str:
-        """Get the full path to the database file."""
+        """Get the full path to the database file.
+
+        Returns:
+            str: The full path to the SQLite database file.
+        """
         return str(Path(self.data_dir) / self.db_filename)
 
     def ensure_directories(self) -> None:
-        """Create storage directories if they don't exist."""
+        """Create storage directories if they don't exist.
+
+        Creates both the data directory and logs directory with parent
+        directories as needed.
+        """
         Path(self.data_dir).mkdir(parents=True, exist_ok=True)
         Path(self.logs_dir).mkdir(parents=True, exist_ok=True)
 
@@ -112,7 +128,11 @@ class PipelineSettings:
 
     @classmethod
     def from_env(cls) -> "PipelineSettings":
-        """Create settings from environment variables."""
+        """Create settings from environment variables.
+
+        Returns:
+            PipelineSettings: A new instance populated from environment variables.
+        """
         subreddits_str = os.getenv("ICM_SUBREDDITS", "xbox")
         subreddits = [s.strip() for s in subreddits_str.split(",") if s.strip()]
         
@@ -148,7 +168,12 @@ class Config:
 
     @classmethod
     def from_env(cls) -> "Config":
-        """Create configuration from environment variables."""
+        """Create configuration from environment variables.
+
+        Returns:
+            Config: A new instance with all sub-configs populated from
+                environment variables.
+        """
         return cls(
             azure_openai=AzureOpenAIConfig.from_env(),
             storage=StorageConfig.from_env(),
@@ -159,9 +184,9 @@ class Config:
 
     def validate(self) -> List[str]:
         """Validate the entire configuration.
-        
+
         Returns:
-            List of validation error messages, empty if valid.
+            List[str]: Validation error messages, empty if valid.
         """
         errors = []
         errors.extend(self.azure_openai.validate())
@@ -180,15 +205,18 @@ class Config:
         return errors
 
     def setup(self) -> None:
-        """Perform initial setup (create directories, etc.)."""
+        """Perform initial setup.
+
+        Creates required storage directories for data and logs.
+        """
         self.storage.ensure_directories()
 
 
 def load_config() -> Config:
     """Load configuration from environment variables.
-    
+
     Returns:
-        Configured Config instance.
+        Config: A configured Config instance with directories created.
     """
     config = Config.from_env()
     config.setup()
@@ -197,9 +225,9 @@ def load_config() -> Config:
 
 def get_sample_env_file() -> str:
     """Get a sample .env file content for reference.
-    
+
     Returns:
-        Sample .env file content as a string.
+        str: Sample .env file content with all configuration options.
     """
     return """# Azure OpenAI Configuration
 AZURE_OPENAI_ENDPOINT=https://your-resource.openai.azure.com/

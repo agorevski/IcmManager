@@ -16,7 +16,14 @@ class TestAnalyzePostsBatch:
     """Tests for the analyze_posts_batch parallel processing."""
 
     def create_test_posts(self, count: int) -> List[RedditPost]:
-        """Create a list of test posts."""
+        """Create a list of test posts for testing purposes.
+
+        Args:
+            count: The number of test posts to create.
+
+        Returns:
+            A list of RedditPost objects with sequential IDs and test data.
+        """
         return [
             RedditPost(
                 id=f"post_{i}",
@@ -38,7 +45,12 @@ class TestAnalyzePostsBatch:
     def test_batch_returns_correct_number_of_results(
         self, mock_load_prompts, mock_azure_client
     ):
-        """Test that batch processing returns one result per input post."""
+        """Test that batch processing returns one result per input post.
+
+        Args:
+            mock_load_prompts: Mock for the load_prompts function.
+            mock_azure_client: Mock for the AzureOpenAI client.
+        """
         # Setup mock prompts
         mock_load_prompts.return_value = {
             "system_prompt": "Test system prompt",
@@ -71,7 +83,15 @@ class TestAnalyzePostsBatch:
     @patch('src.analyzers.azure_openai_analyzer.AzureOpenAI')
     @patch('src.analyzers.azure_openai_analyzer.load_prompts')
     def test_batch_preserves_order(self, mock_load_prompts, mock_azure_client):
-        """Test that batch processing preserves the order of results."""
+        """Test that batch processing preserves the order of results.
+
+        Verifies that when posts are processed in parallel, the results
+        are returned in the same order as the input posts.
+
+        Args:
+            mock_load_prompts: Mock for the load_prompts function.
+            mock_azure_client: Mock for the AzureOpenAI client.
+        """
         mock_load_prompts.return_value = {
             "system_prompt": "Test system prompt",
             "duplicate_check_prompt": "Test duplicate prompt",
@@ -122,7 +142,16 @@ class TestAnalyzePostsBatch:
     @patch('src.analyzers.azure_openai_analyzer.AzureOpenAI')
     @patch('src.analyzers.azure_openai_analyzer.load_prompts')
     def test_batch_runs_in_parallel(self, mock_load_prompts, mock_azure_client):
-        """Test that batch processing actually runs in parallel."""
+        """Test that batch processing actually runs in parallel.
+
+        Verifies parallelism by measuring execution time. Sequential
+        processing would take ~0.5s (5 * 0.1s), while parallel should
+        complete in ~0.1-0.2s.
+
+        Args:
+            mock_load_prompts: Mock for the load_prompts function.
+            mock_azure_client: Mock for the AzureOpenAI client.
+        """
         mock_load_prompts.return_value = {
             "system_prompt": "Test system prompt",
             "duplicate_check_prompt": "Test duplicate prompt",
@@ -177,7 +206,15 @@ class TestAnalyzePostsBatch:
     @patch('src.analyzers.azure_openai_analyzer.AzureOpenAI')
     @patch('src.analyzers.azure_openai_analyzer.load_prompts')
     def test_batch_respects_max_workers(self, mock_load_prompts, mock_azure_client):
-        """Test that max_workers parameter limits concurrency."""
+        """Test that max_workers parameter limits concurrency.
+
+        Verifies that the number of concurrent API calls never exceeds
+        the max_workers limit by tracking active threads during execution.
+
+        Args:
+            mock_load_prompts: Mock for the load_prompts function.
+            mock_azure_client: Mock for the AzureOpenAI client.
+        """
         mock_load_prompts.return_value = {
             "system_prompt": "Test system prompt",
             "duplicate_check_prompt": "Test duplicate prompt",
@@ -226,7 +263,15 @@ class TestAnalyzePostsBatch:
     @patch('src.analyzers.azure_openai_analyzer.AzureOpenAI')
     @patch('src.analyzers.azure_openai_analyzer.load_prompts')
     def test_batch_empty_list(self, mock_load_prompts, mock_azure_client):
-        """Test that batch processing handles empty list correctly."""
+        """Test that batch processing handles empty list correctly.
+
+        Verifies that passing an empty list of posts returns an empty
+        list of results without errors.
+
+        Args:
+            mock_load_prompts: Mock for the load_prompts function.
+            mock_azure_client: Mock for the AzureOpenAI client.
+        """
         mock_load_prompts.return_value = {
             "system_prompt": "Test system prompt",
             "duplicate_check_prompt": "Test duplicate prompt",
@@ -246,7 +291,15 @@ class TestAnalyzePostsBatch:
     @patch('src.analyzers.azure_openai_analyzer.AzureOpenAI')
     @patch('src.analyzers.azure_openai_analyzer.load_prompts')
     def test_batch_single_post(self, mock_load_prompts, mock_azure_client):
-        """Test that batch processing works with a single post."""
+        """Test that batch processing works with a single post.
+
+        Verifies that the batch processing correctly handles the edge
+        case of processing just one post and returns the expected result.
+
+        Args:
+            mock_load_prompts: Mock for the load_prompts function.
+            mock_azure_client: Mock for the AzureOpenAI client.
+        """
         mock_load_prompts.return_value = {
             "system_prompt": "Test system prompt",
             "duplicate_check_prompt": "Test duplicate prompt",

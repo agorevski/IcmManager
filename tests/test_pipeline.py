@@ -11,7 +11,11 @@ class TestPipelineConfig:
     """Tests for PipelineConfig."""
 
     def test_default_config(self):
-        """Test default configuration values."""
+        """Test default configuration values.
+
+        Verifies that PipelineConfig initializes with expected defaults
+        including subreddits, posts_per_subreddit, min_confidence, and min_severity.
+        """
         config = PipelineConfig()
         
         assert config.subreddits == ["xbox"]
@@ -20,7 +24,11 @@ class TestPipelineConfig:
         assert config.min_severity == "medium"
 
     def test_custom_config(self):
-        """Test custom configuration."""
+        """Test custom configuration.
+
+        Verifies that PipelineConfig accepts and stores custom values
+        for subreddits, min_confidence, and min_severity.
+        """
         config = PipelineConfig(
             subreddits=["xbox", "xboxone"],
             min_confidence=0.9,
@@ -34,7 +42,15 @@ class TestIssueDetectorPipeline:
     """Tests for IssueDetectorPipeline."""
 
     def test_run_with_no_posts(self, mock_icm_manager, in_memory_tracker):
-        """Test pipeline with no posts."""
+        """Test pipeline with no posts.
+
+        Verifies that the pipeline handles empty post lists gracefully,
+        returning zero counts for fetched, analyzed, and created items.
+
+        Args:
+            mock_icm_manager: Fixture providing a mock ICM manager.
+            in_memory_tracker: Fixture providing an in-memory post tracker.
+        """
         empty_reddit = MockRedditClient(posts=[])
         empty_analyzer = MockLLMAnalyzer()
         
@@ -59,7 +75,18 @@ class TestIssueDetectorPipeline:
         in_memory_tracker,
         sample_issue_analysis,
     ):
-        """Test that pipeline detects issues and creates ICMs."""
+        """Test that pipeline detects issues and creates ICMs.
+
+        Verifies the complete pipeline flow from fetching posts to analyzing
+        them and creating ICMs for detected issues.
+
+        Args:
+            mock_reddit_client: Fixture providing a mock Reddit client with sample posts.
+            mock_llm_analyzer: Fixture providing a mock LLM analyzer.
+            mock_icm_manager: Fixture providing a mock ICM manager.
+            in_memory_tracker: Fixture providing an in-memory post tracker.
+            sample_issue_analysis: Fixture providing a sample issue analysis.
+        """
         pipeline = IssueDetectorPipeline(
             reddit_client=mock_reddit_client,
             llm_analyzer=mock_llm_analyzer,
@@ -90,7 +117,18 @@ class TestIssueDetectorPipeline:
         in_memory_tracker,
         sample_issue_analysis,
     ):
-        """Test that already analyzed posts are skipped."""
+        """Test that already analyzed posts are skipped.
+
+        Verifies that posts previously marked as analyzed are not
+        re-processed by the pipeline, preventing duplicate work.
+
+        Args:
+            mock_reddit_client: Fixture providing a mock Reddit client with sample posts.
+            mock_llm_analyzer: Fixture providing a mock LLM analyzer.
+            mock_icm_manager: Fixture providing a mock ICM manager.
+            in_memory_tracker: Fixture providing an in-memory post tracker.
+            sample_issue_analysis: Fixture providing a sample issue analysis.
+        """
         # Pre-mark one post as analyzed
         in_memory_tracker.mark_analyzed(
             post_id="post_456",
@@ -122,7 +160,18 @@ class TestIssueDetectorPipeline:
         in_memory_tracker,
         sample_issue_analysis,
     ):
-        """Test that duplicate issues don't create new ICMs."""
+        """Test that duplicate issues don't create new ICMs.
+
+        Verifies that when an issue is identified as a duplicate of an
+        existing issue, no new ICM is created for it.
+
+        Args:
+            mock_reddit_client: Fixture providing a mock Reddit client with sample posts.
+            mock_llm_analyzer: Fixture providing a mock LLM analyzer.
+            mock_icm_manager: Fixture providing a mock ICM manager.
+            in_memory_tracker: Fixture providing an in-memory post tracker.
+            sample_issue_analysis: Fixture providing a sample issue analysis.
+        """
         # Configure analyzer to report duplicate
         mock_llm_analyzer.set_duplicate_result(sample_issue_analysis.summary, True)
         
@@ -146,7 +195,16 @@ class TestIssueDetectorPipeline:
         mock_icm_manager,
         in_memory_tracker,
     ):
-        """Test that low confidence issues are filtered out."""
+        """Test that low confidence issues are filtered out.
+
+        Verifies that issues with confidence scores below the configured
+        minimum threshold are not counted as detected issues.
+
+        Args:
+            mock_reddit_client: Fixture providing a mock Reddit client with sample posts.
+            mock_icm_manager: Fixture providing a mock ICM manager.
+            in_memory_tracker: Fixture providing an in-memory post tracker.
+        """
         low_confidence_analysis = IssueAnalysis(
             is_issue=True,
             confidence=0.5,  # Below default threshold of 0.7
@@ -177,7 +235,16 @@ class TestIssueDetectorPipeline:
         mock_icm_manager,
         in_memory_tracker,
     ):
-        """Test that low severity issues are filtered out."""
+        """Test that low severity issues are filtered out.
+
+        Verifies that issues with severity levels below the configured
+        minimum threshold are not counted as detected issues.
+
+        Args:
+            mock_reddit_client: Fixture providing a mock Reddit client with sample posts.
+            mock_icm_manager: Fixture providing a mock ICM manager.
+            in_memory_tracker: Fixture providing an in-memory post tracker.
+        """
         low_severity_analysis = IssueAnalysis(
             is_issue=True,
             confidence=0.9,
@@ -212,7 +279,17 @@ class TestIssueDetectorPipeline:
         mock_icm_manager,
         in_memory_tracker,
     ):
-        """Test running pipeline for specific posts."""
+        """Test running pipeline for specific posts.
+
+        Verifies that run_for_posts processes a provided list of posts
+        rather than fetching from Reddit.
+
+        Args:
+            sample_post: Fixture providing a sample Reddit post.
+            mock_llm_analyzer: Fixture providing a mock LLM analyzer.
+            mock_icm_manager: Fixture providing a mock ICM manager.
+            in_memory_tracker: Fixture providing an in-memory post tracker.
+        """
         pipeline = IssueDetectorPipeline(
             reddit_client=MockRedditClient(),  # Empty, not used
             llm_analyzer=mock_llm_analyzer,
@@ -235,7 +312,18 @@ class TestIssueDetectorPipeline:
         in_memory_tracker,
         sample_issue_analysis,
     ):
-        """Test that created ICM has correct data."""
+        """Test that created ICM has correct data.
+
+        Verifies that ICMs are created with the correct title, severity,
+        category, source URL, and tags from the analyzed post.
+
+        Args:
+            sample_post: Fixture providing a sample Reddit post.
+            mock_llm_analyzer: Fixture providing a mock LLM analyzer.
+            mock_icm_manager: Fixture providing a mock ICM manager.
+            in_memory_tracker: Fixture providing an in-memory post tracker.
+            sample_issue_analysis: Fixture providing a sample issue analysis.
+        """
         pipeline = IssueDetectorPipeline(
             reddit_client=MockRedditClient(),
             llm_analyzer=mock_llm_analyzer,
@@ -263,7 +351,17 @@ class TestIssueDetectorPipeline:
         mock_icm_manager,
         in_memory_tracker,
     ):
-        """Test that posts are marked as analyzed after processing."""
+        """Test that posts are marked as analyzed after processing.
+
+        Verifies that processed posts are tracked as analyzed and their
+        analysis results are recorded for future reference.
+
+        Args:
+            sample_post: Fixture providing a sample Reddit post.
+            mock_llm_analyzer: Fixture providing a mock LLM analyzer.
+            mock_icm_manager: Fixture providing a mock ICM manager.
+            in_memory_tracker: Fixture providing an in-memory post tracker.
+        """
         pipeline = IssueDetectorPipeline(
             reddit_client=MockRedditClient(),
             llm_analyzer=mock_llm_analyzer,
@@ -287,7 +385,16 @@ class TestIssueDetectorPipeline:
         mock_icm_manager,
         in_memory_tracker,
     ):
-        """Test that errors are captured in results."""
+        """Test that errors are captured in results.
+
+        Verifies that when the LLM analyzer raises an exception, the error
+        is captured in the pipeline results rather than crashing.
+
+        Args:
+            sample_post: Fixture providing a sample Reddit post.
+            mock_icm_manager: Fixture providing a mock ICM manager.
+            in_memory_tracker: Fixture providing an in-memory post tracker.
+        """
         # Create analyzer that raises an API error
         class ErrorAnalyzer(MockLLMAnalyzer):
             def analyze_post(self, post):
@@ -313,7 +420,17 @@ class TestIssueDetectorPipeline:
         mock_icm_manager,
         in_memory_tracker,
     ):
-        """Test that pipeline result includes duration."""
+        """Test that pipeline result includes duration.
+
+        Verifies that the pipeline run result includes a non-negative
+        run_duration_seconds value.
+
+        Args:
+            mock_reddit_client: Fixture providing a mock Reddit client with sample posts.
+            mock_llm_analyzer: Fixture providing a mock LLM analyzer.
+            mock_icm_manager: Fixture providing a mock ICM manager.
+            in_memory_tracker: Fixture providing an in-memory post tracker.
+        """
         pipeline = IssueDetectorPipeline(
             reddit_client=mock_reddit_client,
             llm_analyzer=mock_llm_analyzer,
@@ -330,7 +447,11 @@ class TestPipelineThresholds:
     """Tests for pipeline threshold logic."""
 
     def test_meets_thresholds_confidence(self):
-        """Test confidence threshold checking."""
+        """Test confidence threshold checking.
+
+        Verifies that _meets_thresholds correctly filters analyses based
+        on the configured min_confidence value.
+        """
         config = PipelineConfig(min_confidence=0.8)
         pipeline = IssueDetectorPipeline(
             reddit_client=MockRedditClient(),
@@ -353,7 +474,12 @@ class TestPipelineThresholds:
         assert pipeline._meets_thresholds(low_conf) is False
 
     def test_meets_thresholds_severity(self):
-        """Test severity threshold checking."""
+        """Test severity threshold checking.
+
+        Verifies that _meets_thresholds correctly filters analyses based
+        on the configured min_severity value, accepting high and critical
+        while rejecting medium and lower.
+        """
         config = PipelineConfig(min_severity="high", min_confidence=0.0)
         pipeline = IssueDetectorPipeline(
             reddit_client=MockRedditClient(),

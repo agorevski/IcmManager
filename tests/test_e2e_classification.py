@@ -31,7 +31,15 @@ load_dotenv(TEST_DIR / ".env")
 
 
 def has_azure_credentials() -> bool:
-    """Check if Azure OpenAI credentials are available."""
+    """Check if Azure OpenAI credentials are available.
+
+    Checks for the presence of required environment variables for
+    Azure OpenAI API authentication.
+
+    Returns:
+        bool: True if both AZURE_OPENAI_ENDPOINT and AZURE_OPENAI_API_KEY
+            environment variables are set, False otherwise.
+    """
     return bool(
         os.getenv("AZURE_OPENAI_ENDPOINT") and 
         os.getenv("AZURE_OPENAI_API_KEY")
@@ -47,7 +55,14 @@ pytestmark = pytest.mark.skipif(
 
 @pytest.fixture(scope="module")
 def azure_analyzer() -> AzureOpenAIAnalyzer:
-    """Create Azure OpenAI analyzer from environment config."""
+    """Create Azure OpenAI analyzer from environment config.
+
+    Creates a module-scoped fixture that initializes an AzureOpenAIAnalyzer
+    instance using configuration loaded from environment variables.
+
+    Returns:
+        AzureOpenAIAnalyzer: Configured analyzer instance ready for post analysis.
+    """
     config = AzureOpenAIConfig.from_env()
     return AzureOpenAIAnalyzer(
         azure_endpoint=config.endpoint,
@@ -61,7 +76,14 @@ def azure_analyzer() -> AzureOpenAIAnalyzer:
 
 @pytest.fixture
 def icm_worthy_post() -> RedditPost:
-    """Load the ICM-worthy Xbox Live sign-in outage post."""
+    """Load the ICM-worthy Xbox Live sign-in outage post.
+
+    Loads a test fixture representing a Reddit post about an Xbox Live
+    sign-in outage that should be classified as ICM-worthy.
+
+    Returns:
+        RedditPost: A RedditPost instance containing the test post data.
+    """
     json_path = TEST_ASSETS_DIR / "icm_worthy_xbox_live_signin.json"
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -70,7 +92,14 @@ def icm_worthy_post() -> RedditPost:
 
 @pytest.fixture
 def non_icm_worthy_post() -> RedditPost:
-    """Load the non-ICM-worthy storage expansion question post."""
+    """Load the non-ICM-worthy storage expansion question post.
+
+    Loads a test fixture representing a Reddit post asking about storage
+    expansion options that should NOT be classified as ICM-worthy.
+
+    Returns:
+        RedditPost: A RedditPost instance containing the test post data.
+    """
     json_path = TEST_ASSETS_DIR / "non_icm_worthy_storage_question.json"
     with open(json_path, "r", encoding="utf-8") as f:
         data = json.load(f)
@@ -86,13 +115,17 @@ class TestE2EClassification:
         icm_worthy_post: RedditPost,
     ):
         """Test that the Xbox Live sign-in outage post is classified as ICM-worthy.
-        
+
         This post describes a widespread Xbox Live sign-in outage affecting many users.
         It should be classified as:
         - is_issue: True
         - category: 'account' or 'connectivity' (sign-in/Xbox Live related)
         - severity: 'high' or 'critical' (widespread outage)
         - confidence: >= 0.7 (high confidence)
+
+        Args:
+            azure_analyzer: The Azure OpenAI analyzer fixture.
+            icm_worthy_post: The ICM-worthy test post fixture.
         """
         # Analyze the post
         analysis = azure_analyzer.analyze_post(icm_worthy_post)
@@ -136,10 +169,14 @@ class TestE2EClassification:
         non_icm_worthy_post: RedditPost,
     ):
         """Test that the storage expansion question is NOT classified as ICM-worthy.
-        
+
         This post is just a user asking for product recommendations about
         storage expansion options. There is no technical issue, bug, or
         service problem being reported.
+
+        Args:
+            azure_analyzer: The Azure OpenAI analyzer fixture.
+            non_icm_worthy_post: The non-ICM-worthy test post fixture.
         """
         # Analyze the post
         analysis = azure_analyzer.analyze_post(non_icm_worthy_post)
@@ -156,10 +193,14 @@ class TestE2EClassification:
         icm_worthy_post: RedditPost,
     ):
         """Test that ICM-worthy posts include an affected users estimate.
-        
+
         The Xbox Live outage post has high engagement (510 upvotes, 820 comments)
         and many users reporting the same issue in comments, so the affected
         users estimate should be significant.
+
+        Args:
+            azure_analyzer: The Azure OpenAI analyzer fixture.
+            icm_worthy_post: The ICM-worthy test post fixture.
         """
         analysis = azure_analyzer.analyze_post(icm_worthy_post)
         
@@ -177,7 +218,15 @@ class TestE2EClassification:
         azure_analyzer: AzureOpenAIAnalyzer,
         icm_worthy_post: RedditPost,
     ):
-        """Test that ICM-worthy posts include relevant keywords."""
+        """Test that ICM-worthy posts include relevant keywords.
+
+        Verifies that the analysis extracts meaningful keywords from the post
+        content that relate to the Xbox Live sign-in issue.
+
+        Args:
+            azure_analyzer: The Azure OpenAI analyzer fixture.
+            icm_worthy_post: The ICM-worthy test post fixture.
+        """
         analysis = azure_analyzer.analyze_post(icm_worthy_post)
         
         # Should be classified as an issue
@@ -209,7 +258,15 @@ class TestE2EAnalysisResponse:
         azure_analyzer: AzureOpenAIAnalyzer,
         icm_worthy_post: RedditPost,
     ):
-        """Test that analysis returns a valid IssueAnalysis object."""
+        """Test that analysis returns a valid IssueAnalysis object.
+
+        Verifies that the analyzer returns a properly structured IssueAnalysis
+        instance with all required fields populated with valid values.
+
+        Args:
+            azure_analyzer: The Azure OpenAI analyzer fixture.
+            icm_worthy_post: The ICM-worthy test post fixture.
+        """
         analysis = azure_analyzer.analyze_post(icm_worthy_post)
         
         # Should be an IssueAnalysis instance
@@ -229,7 +286,15 @@ class TestE2EAnalysisResponse:
         azure_analyzer: AzureOpenAIAnalyzer,
         icm_worthy_post: RedditPost,
     ):
-        """Test that analysis includes the raw LLM response for debugging."""
+        """Test that analysis includes the raw LLM response for debugging.
+
+        Verifies that the IssueAnalysis object contains the raw JSON response
+        from the LLM, which is useful for debugging and transparency.
+
+        Args:
+            azure_analyzer: The Azure OpenAI analyzer fixture.
+            icm_worthy_post: The ICM-worthy test post fixture.
+        """
         analysis = azure_analyzer.analyze_post(icm_worthy_post)
         
         # Should have raw response

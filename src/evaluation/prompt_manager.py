@@ -40,7 +40,11 @@ class PromptVersionManager:
         self.versions_dir = versions_dir or DEFAULT_VERSIONS_DIR
 
     def get_current_prompt_path(self) -> Path:
-        """Get path to the current production prompt."""
+        """Get path to the current production prompt.
+
+        Returns:
+            Path to the prompts.yaml file in the prompts directory.
+        """
         return self.prompts_dir / "prompts.yaml"
 
     def get_current_prompt(self) -> Dict[str, Any]:
@@ -315,16 +319,35 @@ class PromptVersionManager:
         return diff
 
     def _get_version_path(self, version: str) -> Path:
-        """Get the path for a version file."""
+        """Get the path for a version file.
+
+        Args:
+            version: Version name to get path for.
+
+        Returns:
+            Path to the version YAML file.
+        """
         return self.versions_dir / f"{version}.yaml"
 
     def _load_yaml(self, path: Path) -> Dict[str, Any]:
-        """Load a YAML file."""
+        """Load a YAML file.
+
+        Args:
+            path: Path to the YAML file to load.
+
+        Returns:
+            Dictionary containing the parsed YAML content.
+        """
         with open(path, "r", encoding="utf-8") as f:
             return yaml.safe_load(f)
 
     def _save_yaml(self, path: Path, data: Dict[str, Any]) -> None:
-        """Save data to a YAML file."""
+        """Save data to a YAML file.
+
+        Args:
+            path: Path to the YAML file to save.
+            data: Dictionary data to save as YAML.
+        """
         path.parent.mkdir(parents=True, exist_ok=True)
         with open(path, "w", encoding="utf-8") as f:
             yaml.dump(data, f, default_flow_style=False, allow_unicode=True, sort_keys=False)

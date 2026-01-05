@@ -10,14 +10,22 @@ class TestRedditComment:
     """Tests for RedditComment model."""
 
     def test_create_comment(self, sample_comment):
-        """Test creating a comment."""
+        """Test creating a comment with valid attributes.
+
+        Args:
+            sample_comment: Pytest fixture providing a sample RedditComment instance.
+        """
         assert sample_comment.id == "comment_123"
         assert sample_comment.post_id == "post_456"
         assert sample_comment.author == "user123"
         assert sample_comment.score == 25
 
     def test_comment_to_dict(self, sample_comment):
-        """Test converting comment to dictionary."""
+        """Test converting comment to dictionary.
+
+        Args:
+            sample_comment: Pytest fixture providing a sample RedditComment instance.
+        """
         data = sample_comment.to_dict()
         
         assert data["id"] == "comment_123"
@@ -26,7 +34,11 @@ class TestRedditComment:
         assert data["parent_id"] is None
 
     def test_comment_from_dict(self, sample_comment):
-        """Test creating comment from dictionary."""
+        """Test creating comment from dictionary.
+
+        Args:
+            sample_comment: Pytest fixture providing a sample RedditComment instance.
+        """
         data = sample_comment.to_dict()
         restored = RedditComment.from_dict(data)
         
@@ -35,7 +47,11 @@ class TestRedditComment:
         assert restored.author == sample_comment.author
 
     def test_comment_with_parent(self):
-        """Test comment with parent ID."""
+        """Test comment with parent ID.
+
+        Verifies that a comment can be created with a parent_id attribute
+        and that this value is correctly serialized to dictionary.
+        """
         comment = RedditComment(
             id="c2",
             post_id="p1",
@@ -55,14 +71,22 @@ class TestRedditPost:
     """Tests for RedditPost model."""
 
     def test_create_post(self, sample_post):
-        """Test creating a post."""
+        """Test creating a post with valid attributes.
+
+        Args:
+            sample_post: Pytest fixture providing a sample RedditPost instance.
+        """
         assert sample_post.id == "post_456"
         assert sample_post.subreddit == "xbox"
         assert sample_post.score == 150
         assert len(sample_post.comments) == 3
 
     def test_post_to_dict(self, sample_post):
-        """Test converting post to dictionary."""
+        """Test converting post to dictionary.
+
+        Args:
+            sample_post: Pytest fixture providing a sample RedditPost instance.
+        """
         data = sample_post.to_dict()
         
         assert data["id"] == "post_456"
@@ -71,7 +95,11 @@ class TestRedditPost:
         assert data["flair"] == "Tech Support"
 
     def test_post_from_dict(self, sample_post):
-        """Test creating post from dictionary."""
+        """Test creating post from dictionary.
+
+        Args:
+            sample_post: Pytest fixture providing a sample RedditPost instance.
+        """
         data = sample_post.to_dict()
         restored = RedditPost.from_dict(data)
         
@@ -80,14 +108,21 @@ class TestRedditPost:
         assert len(restored.comments) == len(sample_post.comments)
 
     def test_get_full_text(self, sample_post):
-        """Test getting full text content."""
+        """Test getting full text content.
+
+        Args:
+            sample_post: Pytest fixture providing a sample RedditPost instance.
+        """
         full_text = sample_post.get_full_text()
         
         assert sample_post.title in full_text
         assert sample_post.body in full_text
 
     def test_get_full_text_no_body(self):
-        """Test getting full text when no body."""
+        """Test getting full text when no body.
+
+        Verifies that get_full_text returns only the title when the post body is empty.
+        """
         post = RedditPost(
             id="p1",
             subreddit="xbox",
@@ -103,14 +138,22 @@ class TestRedditPost:
         assert full_text == "Just a title"
 
     def test_get_comment_thread_text(self, sample_post):
-        """Test getting comment thread text."""
+        """Test getting comment thread text.
+
+        Args:
+            sample_post: Pytest fixture providing a sample RedditPost instance.
+        """
         thread_text = sample_post.get_comment_thread_text()
         
         assert "gamer1" in thread_text
         assert "0x87e50033" in thread_text
 
     def test_get_comment_thread_text_limit(self, sample_post):
-        """Test limiting comment thread."""
+        """Test limiting comment thread.
+
+        Args:
+            sample_post: Pytest fixture providing a sample RedditPost instance.
+        """
         thread_text = sample_post.get_comment_thread_text(max_comments=1)
         
         # Should only have first comment
@@ -122,14 +165,22 @@ class TestIssueAnalysis:
     """Tests for IssueAnalysis model."""
 
     def test_create_analysis(self, sample_issue_analysis):
-        """Test creating an analysis."""
+        """Test creating an analysis with valid attributes.
+
+        Args:
+            sample_issue_analysis: Pytest fixture providing a sample IssueAnalysis instance.
+        """
         assert sample_issue_analysis.is_issue is True
         assert sample_issue_analysis.confidence == 0.92
         assert sample_issue_analysis.category == "connectivity"
         assert sample_issue_analysis.severity == "high"
 
     def test_analysis_to_dict(self, sample_issue_analysis):
-        """Test converting analysis to dictionary."""
+        """Test converting analysis to dictionary.
+
+        Args:
+            sample_issue_analysis: Pytest fixture providing a sample IssueAnalysis instance.
+        """
         data = sample_issue_analysis.to_dict()
         
         assert data["is_issue"] is True
@@ -137,7 +188,11 @@ class TestIssueAnalysis:
         assert "Xbox Live" in data["keywords"]
 
     def test_analysis_from_dict(self, sample_issue_analysis):
-        """Test creating analysis from dictionary."""
+        """Test creating analysis from dictionary.
+
+        Args:
+            sample_issue_analysis: Pytest fixture providing a sample IssueAnalysis instance.
+        """
         data = sample_issue_analysis.to_dict()
         restored = IssueAnalysis.from_dict(data)
         
@@ -146,7 +201,11 @@ class TestIssueAnalysis:
         assert restored.keywords == sample_issue_analysis.keywords
 
     def test_no_issue_factory(self):
-        """Test creating no-issue analysis."""
+        """Test creating no-issue analysis.
+
+        Verifies that the no_issue factory method creates an IssueAnalysis
+        with is_issue=False, confidence=1.0, and affected_users_estimate=0.
+        """
         analysis = IssueAnalysis.no_issue()
         
         assert analysis.is_issue is False
@@ -154,7 +213,11 @@ class TestIssueAnalysis:
         assert analysis.affected_users_estimate == 0
 
     def test_confidence_validation(self):
-        """Test confidence must be between 0 and 1."""
+        """Test confidence must be between 0 and 1.
+
+        Raises:
+            ValueError: When confidence is greater than 1.0.
+        """
         with pytest.raises(ValueError):
             IssueAnalysis(
                 is_issue=True,
@@ -165,7 +228,11 @@ class TestIssueAnalysis:
             )
 
     def test_confidence_validation_negative(self):
-        """Test confidence cannot be negative."""
+        """Test confidence cannot be negative.
+
+        Raises:
+            ValueError: When confidence is less than 0.
+        """
         with pytest.raises(ValueError):
             IssueAnalysis(
                 is_issue=True,
@@ -180,20 +247,32 @@ class TestICMIssue:
     """Tests for ICMIssue model."""
 
     def test_create_icm(self, sample_icm_issue):
-        """Test creating an ICM issue."""
+        """Test creating an ICM issue with valid attributes.
+
+        Args:
+            sample_icm_issue: Pytest fixture providing a sample ICMIssue instance.
+        """
         assert sample_icm_issue.id == "ICM-2024-001"
         assert sample_icm_issue.severity == "high"
         assert sample_icm_issue.status == "open"
 
     def test_icm_to_dict(self, sample_icm_issue):
-        """Test converting ICM to dictionary."""
+        """Test converting ICM to dictionary.
+
+        Args:
+            sample_icm_issue: Pytest fixture providing a sample ICMIssue instance.
+        """
         data = sample_icm_issue.to_dict()
         
         assert data["id"] == "ICM-2024-001"
         assert "connectivity" in data["tags"]
 
     def test_icm_from_dict(self, sample_icm_issue):
-        """Test creating ICM from dictionary."""
+        """Test creating ICM from dictionary.
+
+        Args:
+            sample_icm_issue: Pytest fixture providing a sample ICMIssue instance.
+        """
         data = sample_icm_issue.to_dict()
         restored = ICMIssue.from_dict(data)
         
@@ -206,7 +285,11 @@ class TestAnalyzedPost:
     """Tests for AnalyzedPost model."""
 
     def test_create_analyzed_post(self, sample_issue_analysis):
-        """Test creating an analyzed post record."""
+        """Test creating an analyzed post record.
+
+        Args:
+            sample_issue_analysis: Pytest fixture providing a sample IssueAnalysis instance.
+        """
         analyzed = AnalyzedPost(
             post_id="p1",
             subreddit="xbox",
@@ -221,7 +304,11 @@ class TestAnalyzedPost:
         assert analyzed.analysis_result.is_issue is True
 
     def test_analyzed_post_to_dict(self, sample_issue_analysis):
-        """Test converting analyzed post to dictionary."""
+        """Test converting analyzed post to dictionary.
+
+        Args:
+            sample_issue_analysis: Pytest fixture providing a sample IssueAnalysis instance.
+        """
         analyzed = AnalyzedPost(
             post_id="p1",
             subreddit="xbox",
@@ -237,7 +324,11 @@ class TestAnalyzedPost:
         assert data["analysis_result"]["is_issue"] is True
 
     def test_analyzed_post_from_dict(self, sample_issue_analysis):
-        """Test creating analyzed post from dictionary."""
+        """Test creating analyzed post from dictionary.
+
+        Args:
+            sample_issue_analysis: Pytest fixture providing a sample IssueAnalysis instance.
+        """
         analyzed = AnalyzedPost(
             post_id="p1",
             subreddit="xbox",
@@ -258,11 +349,17 @@ class TestEnums:
     """Tests for enum types."""
 
     def test_severity_values(self):
-        """Test severity enum values."""
+        """Test severity enum values.
+
+        Verifies that Severity enum has correct string values for LOW and CRITICAL.
+        """
         assert Severity.LOW.value == "low"
         assert Severity.CRITICAL.value == "critical"
 
     def test_issue_category_values(self):
-        """Test issue category enum values."""
+        """Test issue category enum values.
+
+        Verifies that IssueCategory enum has correct string values for CONNECTIVITY and GAME_PASS.
+        """
         assert IssueCategory.CONNECTIVITY.value == "connectivity"
         assert IssueCategory.GAME_PASS.value == "game_pass"

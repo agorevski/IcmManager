@@ -296,7 +296,15 @@ class ReportGenerator:
         return self.save_report(content, filename, subdir="evaluation_reports")
 
     def _format_classification_metrics_table(self, metrics: ClassificationMetrics) -> str:
-        """Format classification metrics as a Markdown table."""
+        """Format classification metrics as a Markdown table.
+        
+        Args:
+            metrics: The classification metrics to format.
+            
+        Returns:
+            Markdown formatted table string with precision, recall, F1, accuracy,
+            specificity, and confusion matrix counts.
+        """
         lines = [
             "| Metric | Value |",
             "|--------|-------|",
@@ -313,7 +321,16 @@ class ReportGenerator:
         return "\n".join(lines)
 
     def _format_multiclass_metrics_table(self, metrics, label: str) -> str:
-        """Format multi-class metrics as a Markdown table."""
+        """Format multi-class metrics as a Markdown table.
+        
+        Args:
+            metrics: The multi-class metrics object containing per-class data.
+            label: The column header label for the class names (e.g., "Category").
+            
+        Returns:
+            Markdown formatted string with macro/weighted F1, accuracy, and
+            per-class precision, recall, and F1 scores.
+        """
         lines = [
             f"**Macro F1:** {metrics.macro_f1:.4f}",
             f"**Weighted F1:** {metrics.weighted_f1:.4f}",

@@ -34,7 +34,12 @@ class LabeledTestCase:
     edge_case_type: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary representation."""
+        """Convert to dictionary representation.
+
+        Returns:
+            Dict[str, Any]: Dictionary containing all test case fields,
+                with the post converted to its dictionary form.
+        """
         return {
             "test_case_id": self.test_case_id,
             "post": self.post.to_dict(),
@@ -48,7 +53,15 @@ class LabeledTestCase:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "LabeledTestCase":
-        """Create from dictionary representation."""
+        """Create from dictionary representation.
+
+        Args:
+            data: Dictionary containing test case fields. Must include
+                'test_case_id', 'post', and 'expected_is_issue'.
+
+        Returns:
+            LabeledTestCase: A new instance populated from the dictionary.
+        """
         return cls(
             test_case_id=data["test_case_id"],
             post=RedditPost.from_dict(data["post"]),
@@ -82,7 +95,12 @@ class PredictionResult:
 
     @property
     def is_fully_correct(self) -> bool:
-        """Check if all applicable predictions are correct."""
+        """Check if all applicable predictions are correct.
+
+        Returns:
+            bool: True if is_issue is correct, confidence is acceptable,
+                and (for issues) category and severity are correct.
+        """
         if not self.is_issue_correct:
             return False
         if not self.confidence_acceptable:
@@ -97,26 +115,47 @@ class PredictionResult:
 
     @property
     def is_true_positive(self) -> bool:
-        """Check if this is a true positive (correctly identified issue)."""
+        """Check if this is a true positive (correctly identified issue).
+
+        Returns:
+            bool: True if both expected and predicted are issues.
+        """
         return self.test_case.expected_is_issue and self.analysis.is_issue
 
     @property
     def is_true_negative(self) -> bool:
-        """Check if this is a true negative (correctly identified non-issue)."""
+        """Check if this is a true negative (correctly identified non-issue).
+
+        Returns:
+            bool: True if both expected and predicted are non-issues.
+        """
         return not self.test_case.expected_is_issue and not self.analysis.is_issue
 
     @property
     def is_false_positive(self) -> bool:
-        """Check if this is a false positive (incorrectly flagged as issue)."""
+        """Check if this is a false positive (incorrectly flagged as issue).
+
+        Returns:
+            bool: True if expected is non-issue but predicted is issue.
+        """
         return not self.test_case.expected_is_issue and self.analysis.is_issue
 
     @property
     def is_false_negative(self) -> bool:
-        """Check if this is a false negative (missed a real issue)."""
+        """Check if this is a false negative (missed a real issue).
+
+        Returns:
+            bool: True if expected is issue but predicted is non-issue.
+        """
         return self.test_case.expected_is_issue and not self.analysis.is_issue
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary representation."""
+        """Convert to dictionary representation.
+
+        Returns:
+            Dict[str, Any]: Dictionary containing prediction details including
+                expected vs predicted values, correctness flags, and summary.
+        """
         return {
             "test_case_id": self.test_case.test_case_id,
             "expected_is_issue": self.test_case.expected_is_issue,
@@ -159,7 +198,15 @@ class FailureCase:
 
     @classmethod
     def from_prediction(cls, prediction: PredictionResult) -> Optional["FailureCase"]:
-        """Create a FailureCase from a prediction if it failed."""
+        """Create a FailureCase from a prediction if it failed.
+
+        Args:
+            prediction: The prediction result to analyze for failures.
+
+        Returns:
+            Optional[FailureCase]: A FailureCase with failure type, details,
+                and potential causes if the prediction failed; None if correct.
+        """
         if prediction.is_fully_correct:
             return None
 
@@ -234,7 +281,12 @@ class FailureCase:
         return None
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary representation."""
+        """Convert to dictionary representation.
+
+        Returns:
+            Dict[str, Any]: Dictionary containing failure details including
+                test case ID, failure type, error details, and causes.
+        """
         return {
             "test_case_id": self.prediction.test_case.test_case_id,
             "failure_type": self.failure_type,
@@ -262,7 +314,12 @@ class EvaluationDataset:
     test_cases: List[LabeledTestCase]
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary representation."""
+        """Convert to dictionary representation.
+
+        Returns:
+            Dict[str, Any]: Dictionary containing dataset metadata and
+                all test cases converted to their dictionary form.
+        """
         return {
             "version": self.version,
             "description": self.description,
@@ -273,7 +330,15 @@ class EvaluationDataset:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "EvaluationDataset":
-        """Create from dictionary representation."""
+        """Create from dictionary representation.
+
+        Args:
+            data: Dictionary containing dataset fields. Test cases should
+                be provided as a list of dictionaries under 'test_cases'.
+
+        Returns:
+            EvaluationDataset: A new instance populated from the dictionary.
+        """
         created_at = data.get("created_at")
         if isinstance(created_at, str):
             created_at = datetime.fromisoformat(created_at)
@@ -292,21 +357,41 @@ class EvaluationDataset:
 
     @classmethod
     def load(cls, path: Path | str) -> "EvaluationDataset":
-        """Load dataset from a JSON file."""
+        """Load dataset from a JSON file.
+
+        Args:
+            path: Path to the JSON file containing the dataset.
+
+        Returns:
+            EvaluationDataset: A new instance loaded from the file.
+        """
         path = Path(path)
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
         return cls.from_dict(data)
 
     def save(self, path: Path | str) -> None:
-        """Save dataset to a JSON file."""
+        """Save dataset to a JSON file.
+
+        Args:
+            path: Path where the JSON file will be saved.
+                Parent directories are created if they don't exist.
+        """
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
         with open(path, "w", encoding="utf-8") as f:
             json.dump(self.to_dict(), f, indent=2)
 
     def filter_by_edge_case_type(self, edge_case_type: Optional[str]) -> "EvaluationDataset":
-        """Filter test cases by edge case type."""
+        """Filter test cases by edge case type.
+
+        Args:
+            edge_case_type: The edge case type to filter by (e.g., "ambiguous").
+                Use None to get cases without an edge case type.
+
+        Returns:
+            EvaluationDataset: A new dataset containing only matching cases.
+        """
         filtered = [
             tc for tc in self.test_cases
             if tc.edge_case_type == edge_case_type
@@ -320,7 +405,12 @@ class EvaluationDataset:
         )
 
     def filter_positive_cases(self) -> "EvaluationDataset":
-        """Filter to only positive cases (expected issues)."""
+        """Filter to only positive cases (expected issues).
+
+        Returns:
+            EvaluationDataset: A new dataset containing only cases where
+                expected_is_issue is True.
+        """
         filtered = [tc for tc in self.test_cases if tc.expected_is_issue]
         return EvaluationDataset(
             version=self.version,
@@ -331,7 +421,12 @@ class EvaluationDataset:
         )
 
     def filter_negative_cases(self) -> "EvaluationDataset":
-        """Filter to only negative cases (non-issues)."""
+        """Filter to only negative cases (non-issues).
+
+        Returns:
+            EvaluationDataset: A new dataset containing only cases where
+                expected_is_issue is False.
+        """
         filtered = [tc for tc in self.test_cases if not tc.expected_is_issue]
         return EvaluationDataset(
             version=self.version,
@@ -343,17 +438,30 @@ class EvaluationDataset:
 
     @property
     def positive_count(self) -> int:
-        """Count of positive (issue) cases."""
+        """Count of positive (issue) cases.
+
+        Returns:
+            int: Number of test cases where expected_is_issue is True.
+        """
         return sum(1 for tc in self.test_cases if tc.expected_is_issue)
 
     @property
     def negative_count(self) -> int:
-        """Count of negative (non-issue) cases."""
+        """Count of negative (non-issue) cases.
+
+        Returns:
+            int: Number of test cases where expected_is_issue is False.
+        """
         return sum(1 for tc in self.test_cases if not tc.expected_is_issue)
 
     @property
     def category_distribution(self) -> Dict[str, int]:
-        """Distribution of categories in positive cases."""
+        """Distribution of categories in positive cases.
+
+        Returns:
+            Dict[str, int]: Mapping of category names to their counts
+                across all positive test cases.
+        """
         dist: Dict[str, int] = {}
         for tc in self.test_cases:
             if tc.expected_is_issue and tc.expected_category:
@@ -362,7 +470,12 @@ class EvaluationDataset:
 
     @property
     def severity_distribution(self) -> Dict[str, int]:
-        """Distribution of severities in positive cases."""
+        """Distribution of severities in positive cases.
+
+        Returns:
+            Dict[str, int]: Mapping of severity levels to their counts
+                across all positive test cases.
+        """
         dist: Dict[str, int] = {}
         for tc in self.test_cases:
             if tc.expected_is_issue and tc.expected_severity:

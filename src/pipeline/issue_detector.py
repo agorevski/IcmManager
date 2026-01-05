@@ -204,7 +204,14 @@ class IssueDetectorPipeline:
         return result
 
     def _fetch_posts(self) -> List[RedditPost]:
-        """Fetch posts from all configured subreddits."""
+        """Fetch posts from all configured subreddits.
+
+        Retrieves recent, rising, and hot posts based on configuration settings.
+        Deduplicates posts by ID and applies engagement filters if configured.
+
+        Returns:
+            List of unique RedditPost objects meeting engagement thresholds.
+        """
         all_posts = []
         seen_ids = set()
         
@@ -258,7 +265,14 @@ class IssueDetectorPipeline:
         return all_posts
 
     def _filter_new_posts(self, posts: List[RedditPost]) -> List[RedditPost]:
-        """Filter out posts that have already been analyzed."""
+        """Filter out posts that have already been analyzed.
+
+        Args:
+            posts: List of RedditPost objects to filter.
+
+        Returns:
+            List of posts that have not been previously analyzed.
+        """
         if not posts:
             return []
         
@@ -274,7 +288,16 @@ class IssueDetectorPipeline:
         existing_issues: List[ICMIssue],
         result: PipelineResult
     ) -> None:
-        """Process a single post through the pipeline."""
+        """Process a single post through the pipeline.
+
+        Analyzes the post for issues, checks for duplicates, creates ICM if
+        needed, and records the analysis.
+
+        Args:
+            post: The RedditPost to process.
+            existing_issues: List of existing ICM issues for duplicate detection.
+            result: PipelineResult to update with processing statistics.
+        """
         # Analyze the post
         analysis = self.llm_analyzer.analyze_post(post)
         
@@ -317,7 +340,14 @@ class IssueDetectorPipeline:
         )
 
     def _meets_thresholds(self, analysis: IssueAnalysis) -> bool:
-        """Check if an analysis meets the configured thresholds."""
+        """Check if an analysis meets the configured thresholds.
+
+        Args:
+            analysis: The IssueAnalysis to evaluate.
+
+        Returns:
+            True if the analysis meets minimum confidence and severity thresholds.
+        """
         # Check confidence threshold
         if analysis.confidence < self.config.min_confidence:
             return False
@@ -332,7 +362,15 @@ class IssueDetectorPipeline:
         return True
 
     def _create_icm(self, post: RedditPost, analysis: IssueAnalysis) -> ICMIssue:
-        """Create a new ICM from a post and its analysis."""
+        """Create a new ICM from a post and its analysis.
+
+        Args:
+            post: The source RedditPost.
+            analysis: The IssueAnalysis containing detected issue details.
+
+        Returns:
+            The newly created ICMIssue.
+        """
         # Build description
         description = self._build_icm_description(post, analysis)
         
@@ -350,7 +388,18 @@ class IssueDetectorPipeline:
         )
 
     def _build_icm_description(self, post: RedditPost, analysis: IssueAnalysis) -> str:
-        """Build a detailed ICM description."""
+        """Build a detailed ICM description.
+
+        Constructs a markdown-formatted description including issue summary,
+        source information, analysis details, and post content.
+
+        Args:
+            post: The source RedditPost.
+            analysis: The IssueAnalysis containing detected issue details.
+
+        Returns:
+            Formatted markdown string for the ICM description.
+        """
         lines = [
             f"## Issue Summary",
             f"{analysis.summary}",

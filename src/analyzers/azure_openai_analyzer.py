@@ -101,7 +101,20 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
 
     @_api_retry
     def _call_llm(self, messages: list, response_format: dict = None):
-        """Make an API call to the LLM with retry logic for transient errors."""
+        """Make an API call to the LLM with retry logic for transient errors.
+
+        Args:
+            messages: List of message dictionaries with 'role' and 'content' keys.
+            response_format: Optional response format specification for the API.
+
+        Returns:
+            The chat completion response from the Azure OpenAI API.
+
+        Raises:
+            APIConnectionError: If connection to the API fails after retries.
+            RateLimitError: If rate limit is exceeded after retries.
+            APITimeoutError: If the request times out after retries.
+        """
         return self.client.chat.completions.create(
             model=self.model,
             messages=messages,
@@ -111,7 +124,18 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
         )
 
     def analyze_post(self, post: RedditPost) -> IssueAnalysis:
-        """Analyze a Reddit post and its comments to detect issues."""
+        """Analyze a Reddit post and its comments to detect issues.
+
+        Uses the Azure OpenAI API to analyze post content and determine if it
+        represents a reportable issue. Logs all requests, responses, and results.
+
+        Args:
+            post: The Reddit post to analyze, including title, body, and comments.
+
+        Returns:
+            IssueAnalysis containing the analysis results including whether it's
+            an issue, confidence score, category, severity, and summary.
+        """
         request_id = self.logger.generate_request_id()
         
         # Build the prompt with post content
@@ -217,7 +241,20 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
         analysis: IssueAnalysis,
         existing_issues: List[ICMIssue]
     ) -> bool:
-        """Check if an analysis represents a duplicate of an existing issue."""
+        """Check if an analysis represents a duplicate of an existing issue.
+
+        Uses the LLM to compare the new analysis against existing ICM issues
+        to determine if it's a duplicate. Returns False on errors to avoid
+        missing legitimate new issues.
+
+        Args:
+            analysis: The new issue analysis to check for duplicates.
+            existing_issues: List of existing ICM issues to compare against.
+
+        Returns:
+            True if the analysis is a duplicate of an existing issue,
+            False otherwise or if an error occurs.
+        """
         if not existing_issues:
             return False
         
@@ -281,11 +318,26 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
             return False
 
     def get_model_name(self) -> str:
-        """Get the name/identifier of the LLM model being used."""
+        """Get the name/identifier of the LLM model being used.
+
+        Returns:
+            The deployment name of the Azure OpenAI model.
+        """
         return self.model
 
     def _build_post_prompt(self, post: RedditPost) -> str:
-        """Build the user prompt from a Reddit post."""
+        """Build the user prompt from a Reddit post.
+
+        Constructs a formatted prompt string containing the post's subreddit,
+        title, score, comments count, flair, body, and comment thread. Content
+        is truncated to stay within token limits.
+
+        Args:
+            post: The Reddit post to build the prompt from.
+
+        Returns:
+            A formatted string prompt suitable for the LLM analysis request.
+        """
         parts = [
             f"Subreddit: r/{post.subreddit}",
             f"Title: {post.title}",
@@ -310,7 +362,20 @@ class AzureOpenAIAnalyzer(ILLMAnalyzer):
         response_text: str, 
         post: RedditPost
     ) -> IssueAnalysis:
-        """Parse the LLM response into an IssueAnalysis object."""
+        """Parse the LLM response into an IssueAnalysis object.
+
+        Validates and normalizes the JSON response from the LLM, ensuring
+        category and severity values are valid. Falls back to safe defaults
+        on parse failures.
+
+        Args:
+            response_text: The raw JSON response text from the LLM.
+            post: The original Reddit post, used to estimate affected users.
+
+        Returns:
+            IssueAnalysis object populated with parsed data, or a default
+            non-issue analysis if parsing fails.
+        """
         try:
             data = json.loads(response_text)
             

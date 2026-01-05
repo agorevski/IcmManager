@@ -23,40 +23,90 @@ class ClassificationMetrics:
 
     @property
     def total(self) -> int:
-        """Total number of samples."""
+        """Calculate the total number of samples.
+
+        Returns:
+            int: Sum of true positives, true negatives, false positives,
+                and false negatives.
+        """
         return self.tp + self.tn + self.fp + self.fn
 
     @property
     def precision(self) -> float:
-        """Precision: TP / (TP + FP). How many predicted issues are real."""
+        """Calculate precision metric.
+
+        Precision measures how many predicted issues are real issues.
+        Calculated as TP / (TP + FP).
+
+        Returns:
+            float: Precision value between 0.0 and 1.0. Returns 0.0 if
+                there are no positive predictions.
+        """
         denominator = self.tp + self.fp
         return self.tp / denominator if denominator > 0 else 0.0
 
     @property
     def recall(self) -> float:
-        """Recall: TP / (TP + FN). How many real issues were found."""
+        """Calculate recall metric.
+
+        Recall measures how many real issues were correctly identified.
+        Calculated as TP / (TP + FN).
+
+        Returns:
+            float: Recall value between 0.0 and 1.0. Returns 0.0 if
+                there are no actual positive cases.
+        """
         denominator = self.tp + self.fn
         return self.tp / denominator if denominator > 0 else 0.0
 
     @property
     def f1_score(self) -> float:
-        """F1 Score: Harmonic mean of precision and recall."""
+        """Calculate F1 score.
+
+        F1 score is the harmonic mean of precision and recall, providing
+        a single metric that balances both concerns.
+
+        Returns:
+            float: F1 score between 0.0 and 1.0. Returns 0.0 if both
+                precision and recall are zero.
+        """
         p, r = self.precision, self.recall
         return 2 * p * r / (p + r) if (p + r) > 0 else 0.0
 
     @property
     def accuracy(self) -> float:
-        """Accuracy: (TP + TN) / Total."""
+        """Calculate accuracy metric.
+
+        Accuracy measures the proportion of correct predictions.
+        Calculated as (TP + TN) / Total.
+
+        Returns:
+            float: Accuracy value between 0.0 and 1.0. Returns 0.0 if
+                there are no samples.
+        """
         return (self.tp + self.tn) / self.total if self.total > 0 else 0.0
 
     @property
     def specificity(self) -> float:
-        """Specificity: TN / (TN + FP). How many non-issues were correctly identified."""
+        """Calculate specificity metric.
+
+        Specificity measures how many non-issues were correctly identified.
+        Calculated as TN / (TN + FP).
+
+        Returns:
+            float: Specificity value between 0.0 and 1.0. Returns 0.0 if
+                there are no actual negative cases.
+        """
         denominator = self.tn + self.fp
         return self.tn / denominator if denominator > 0 else 0.0
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary representation."""
+        """Convert metrics to a dictionary representation.
+
+        Returns:
+            Dict[str, Any]: Dictionary containing all metric values with
+                computed metrics rounded to 4 decimal places.
+        """
         return {
             "tp": self.tp,
             "tn": self.tn,
@@ -72,7 +122,16 @@ class ClassificationMetrics:
 
     @classmethod
     def from_predictions(cls, predictions: List[PredictionResult]) -> "ClassificationMetrics":
-        """Calculate metrics from a list of predictions."""
+        """Calculate classification metrics from a list of predictions.
+
+        Args:
+            predictions: List of PredictionResult objects containing
+                actual and predicted values.
+
+        Returns:
+            ClassificationMetrics: A new instance with computed confusion
+                matrix values (tp, tn, fp, fn).
+        """
         tp = sum(1 for p in predictions if p.is_true_positive)
         tn = sum(1 for p in predictions if p.is_true_negative)
         fp = sum(1 for p in predictions if p.is_false_positive)
@@ -91,7 +150,15 @@ class CategoryMetrics:
     labels: List[str] = field(default_factory=list)
 
     def add_prediction(self, actual: str, predicted: str) -> None:
-        """Add a prediction to the confusion matrix."""
+        """Add a prediction to the confusion matrix.
+
+        Updates the confusion matrix with a new actual/predicted pair and
+        tracks any new labels encountered.
+
+        Args:
+            actual: The actual (ground truth) label.
+            predicted: The predicted label from the model.
+        """
         if actual not in self.confusion_matrix:
             self.confusion_matrix[actual] = {}
         if predicted not in self.confusion_matrix[actual]:
@@ -105,7 +172,15 @@ class CategoryMetrics:
             self.labels.append(predicted)
 
     def per_class_metrics(self) -> Dict[str, ClassificationMetrics]:
-        """Calculate binary classification metrics for each class."""
+        """Calculate binary classification metrics for each class.
+
+        Computes one-vs-rest classification metrics for each label in the
+        confusion matrix.
+
+        Returns:
+            Dict[str, ClassificationMetrics]: Dictionary mapping each label
+                to its binary classification metrics (tp, tn, fp, fn).
+        """
         result = {}
         for label in self.labels:
             tp = self.confusion_matrix.get(label, {}).get(label, 0)
@@ -135,7 +210,15 @@ class CategoryMetrics:
 
     @property
     def macro_f1(self) -> float:
-        """Macro F1: Average F1 across all classes (unweighted)."""
+        """Calculate macro-averaged F1 score.
+
+        Computes the unweighted average of F1 scores across all classes,
+        treating each class equally regardless of frequency.
+
+        Returns:
+            float: Macro F1 score between 0.0 and 1.0. Returns 0.0 if
+                there are no classes.
+        """
         per_class = self.per_class_metrics()
         if not per_class:
             return 0.0
@@ -144,7 +227,15 @@ class CategoryMetrics:
 
     @property
     def weighted_f1(self) -> float:
-        """Weighted F1: F1 weighted by class frequency."""
+        """Calculate weighted-average F1 score.
+
+        Computes the F1 score weighted by the frequency of each class,
+        giving more importance to classes with more samples.
+
+        Returns:
+            float: Weighted F1 score between 0.0 and 1.0. Returns 0.0 if
+                there are no classes or no samples.
+        """
         per_class = self.per_class_metrics()
         if not per_class:
             return 0.0
@@ -166,7 +257,14 @@ class CategoryMetrics:
 
     @property
     def accuracy(self) -> float:
-        """Overall accuracy: correct predictions / total predictions."""
+        """Calculate overall accuracy.
+
+        Computes the proportion of correct predictions across all classes.
+
+        Returns:
+            float: Accuracy value between 0.0 and 1.0. Returns 0.0 if
+                there are no predictions.
+        """
         correct = sum(
             self.confusion_matrix.get(label, {}).get(label, 0)
             for label in self.labels
@@ -178,7 +276,13 @@ class CategoryMetrics:
         return correct / total if total > 0 else 0.0
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary representation."""
+        """Convert category metrics to a dictionary representation.
+
+        Returns:
+            Dict[str, Any]: Dictionary containing confusion matrix, labels,
+                per-class metrics, and aggregate scores rounded to 4 decimal
+                places.
+        """
         return {
             "confusion_matrix": self.confusion_matrix,
             "labels": self.labels,
@@ -197,11 +301,20 @@ class CategoryMetrics:
         predictions: List[PredictionResult],
         metric_type: str = "category"  # or "severity"
     ) -> "CategoryMetrics":
-        """Calculate category/severity metrics from predictions.
-        
-        Only considers predictions where:
-        - The test case expected an issue (expected_is_issue=True)
-        - The prediction identified it as an issue (is_issue=True)
+        """Calculate category or severity metrics from predictions.
+
+        Only considers predictions where the test case expected an issue
+        (expected_is_issue=True) and the prediction identified it as an
+        issue (is_issue=True).
+
+        Args:
+            predictions: List of PredictionResult objects to evaluate.
+            metric_type: Type of metric to calculate. Either "category"
+                or "severity". Defaults to "category".
+
+        Returns:
+            CategoryMetrics: A new instance with the confusion matrix
+                populated from the filtered predictions.
         """
         metrics = cls()
         
@@ -265,9 +378,13 @@ class EvaluationResult:
 
     @property
     def combined_f1(self) -> float:
-        """Combined F1: Average of issue, category, and severity F1 scores.
-        
-        Equally weighted as per requirements.
+        """Calculate combined F1 score.
+
+        Computes the equally-weighted average of issue classification F1,
+        category macro F1, and severity macro F1 scores.
+
+        Returns:
+            float: Combined F1 score between 0.0 and 1.0.
         """
         issue_f1 = self.issue_classification.f1_score
         category_f1 = self.category_metrics.macro_f1
@@ -276,7 +393,15 @@ class EvaluationResult:
 
     @property
     def pass_rate(self) -> float:
-        """Percentage of test cases that passed all checks."""
+        """Calculate the pass rate.
+
+        Computes the percentage of test cases that passed all checks
+        (is_issue, category, and severity all correct).
+
+        Returns:
+            float: Pass rate between 0.0 and 1.0. Returns 0.0 if there
+                are no predictions.
+        """
         if not self.predictions:
             return 0.0
         correct = sum(1 for p in self.predictions if p.is_fully_correct)
@@ -284,19 +409,38 @@ class EvaluationResult:
 
     @property
     def failure_rate(self) -> float:
-        """Percentage of test cases that failed."""
+        """Calculate the failure rate.
+
+        Computes the percentage of test cases that failed at least one check.
+
+        Returns:
+            float: Failure rate between 0.0 and 1.0.
+        """
         return 1.0 - self.pass_rate
 
     @property
     def failure_breakdown(self) -> Dict[str, int]:
-        """Breakdown of failures by type."""
+        """Get breakdown of failures by type.
+
+        Counts the number of failures for each failure type.
+
+        Returns:
+            Dict[str, int]: Dictionary mapping failure type names to
+                their occurrence counts.
+        """
         breakdown: Dict[str, int] = {}
         for failure in self.failures:
             breakdown[failure.failure_type] = breakdown.get(failure.failure_type, 0) + 1
         return breakdown
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary representation."""
+        """Convert evaluation result to a dictionary representation.
+
+        Returns:
+            Dict[str, Any]: Dictionary containing all evaluation data
+                including metrics, predictions, failures, and metadata.
+                Floating point values are rounded to 4 decimal places.
+        """
         return {
             "prompt_version": self.prompt_version,
             "dataset_name": self.dataset_name,
@@ -326,7 +470,20 @@ class EvaluationResult:
         prompt_version: str,
         dataset_name: str,
     ) -> "EvaluationResult":
-        """Compute evaluation result from predictions."""
+        """Compute complete evaluation result from predictions.
+
+        Calculates all metrics including classification, category, severity,
+        and confidence analysis from the provided predictions.
+
+        Args:
+            predictions: List of PredictionResult objects to evaluate.
+            prompt_version: Identifier for the prompt version being evaluated.
+            dataset_name: Name of the dataset used for evaluation.
+
+        Returns:
+            EvaluationResult: A complete evaluation result with all metrics
+                and failure analysis.
+        """
         # Calculate all metrics
         issue_classification = ClassificationMetrics.from_predictions(predictions)
         category_metrics = CategoryMetrics.from_predictions(predictions, "category")
@@ -380,14 +537,24 @@ class ComparisonResult:
 
     @property
     def best_version(self) -> Optional[str]:
-        """Get the version with the highest combined F1."""
+        """Get the version with the highest combined F1 score.
+
+        Returns:
+            Optional[str]: The prompt version identifier with the best
+                combined F1 score, or None if no results exist.
+        """
         if not self.results:
             return None
         return max(self.results.keys(), key=lambda v: self.results[v].combined_f1)
 
     @property
     def rankings(self) -> List[tuple]:
-        """Get versions ranked by combined F1 (highest first)."""
+        """Get versions ranked by combined F1 score.
+
+        Returns:
+            List[tuple]: List of (version, combined_f1) tuples sorted by
+                combined F1 score in descending order (highest first).
+        """
         return sorted(
             [(v, r.combined_f1) for v, r in self.results.items()],
             key=lambda x: x[1],
@@ -395,7 +562,12 @@ class ComparisonResult:
         )
 
     def to_dict(self) -> Dict[str, Any]:
-        """Convert to dictionary representation."""
+        """Convert comparison result to a dictionary representation.
+
+        Returns:
+            Dict[str, Any]: Dictionary containing dataset name, best version,
+                rankings, and full results for each version compared.
+        """
         return {
             "dataset_name": self.dataset_name,
             "best_version": self.best_version,

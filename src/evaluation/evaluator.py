@@ -115,7 +115,20 @@ class PromptEvaluator(IPromptEvaluator):
         prompt_version: str,
         dataset_name: str = "unknown",
     ) -> EvaluationResult:
-        """Evaluate an analyzer against a set of test cases."""
+        """Evaluate an analyzer against a set of test cases.
+
+        Runs the analyzer on each test case sequentially and computes
+        evaluation metrics by comparing predictions to ground truth labels.
+
+        Args:
+            analyzer: The LLM analyzer instance to evaluate.
+            test_cases: List of labeled test cases with expected results.
+            prompt_version: Identifier for the prompt version being evaluated.
+            dataset_name: Name of the dataset for result tracking.
+
+        Returns:
+            EvaluationResult containing computed metrics and predictions.
+        """
         predictions = []
         
         for i, test_case in enumerate(test_cases):
@@ -142,7 +155,19 @@ class PromptEvaluator(IPromptEvaluator):
         dataset: EvaluationDataset,
         prompt_version: str,
     ) -> EvaluationResult:
-        """Evaluate an analyzer against a full dataset."""
+        """Evaluate an analyzer against a full dataset.
+
+        Uses the dataset's confidence threshold if specified, temporarily
+        overriding the evaluator's default threshold during evaluation.
+
+        Args:
+            analyzer: The LLM analyzer instance to evaluate.
+            dataset: The evaluation dataset containing test cases and metadata.
+            prompt_version: Identifier for the prompt version being evaluated.
+
+        Returns:
+            EvaluationResult containing computed metrics and predictions.
+        """
         # Use the dataset's confidence threshold if not overridden
         original_threshold = self.confidence_threshold
         if dataset.confidence_threshold:
@@ -164,7 +189,19 @@ class PromptEvaluator(IPromptEvaluator):
         test_cases: List[LabeledTestCase],
         dataset_name: str = "unknown",
     ) -> ComparisonResult:
-        """Compare multiple analyzers/prompt versions."""
+        """Compare multiple analyzers or prompt versions.
+
+        Evaluates each analyzer against the same test cases and produces
+        a comparison report with rankings based on evaluation metrics.
+
+        Args:
+            analyzers: Dictionary mapping version names to analyzer instances.
+            test_cases: List of labeled test cases to evaluate against.
+            dataset_name: Name of the dataset for result tracking.
+
+        Returns:
+            ComparisonResult containing results for each version and rankings.
+        """
         results = {}
         
         for version, analyzer in analyzers.items():
@@ -265,14 +302,35 @@ class ParallelPromptEvaluator(PromptEvaluator):
         prompt_version: str,
         dataset_name: str = "unknown",
     ) -> EvaluationResult:
-        """Evaluate using parallel processing with ThreadPoolExecutor."""
+        """Evaluate using parallel processing with ThreadPoolExecutor.
+
+        Runs test cases concurrently using a thread pool for faster evaluation.
+        Results are collected and sorted to preserve original test case order.
+
+        Args:
+            analyzer: The LLM analyzer instance to evaluate.
+            test_cases: List of labeled test cases with expected results.
+            prompt_version: Identifier for the prompt version being evaluated.
+            dataset_name: Name of the dataset for result tracking.
+
+        Returns:
+            EvaluationResult containing computed metrics and predictions.
+        """
         # Store results with their original indices to preserve order
         indexed_predictions: List[tuple] = []
         total = len(test_cases)
         completed = 0
         
         def process_test_case(index: int, test_case: LabeledTestCase):
-            """Process a single test case and return indexed result."""
+            """Process a single test case and return indexed result.
+
+            Args:
+                index: The original index of the test case in the list.
+                test_case: The labeled test case to process.
+
+            Returns:
+                Tuple of (index, PredictionResult) for ordering results.
+            """
             analysis = analyzer.analyze_post(test_case.post)
             prediction = self._create_prediction(test_case, analysis)
             return (index, prediction)
@@ -336,7 +394,20 @@ class BatchPromptEvaluator(PromptEvaluator):
         prompt_version: str,
         dataset_name: str = "unknown",
     ) -> EvaluationResult:
-        """Evaluate using batch processing."""
+        """Evaluate using batch processing.
+
+        Processes test cases in batches using the analyzer's batch API
+        for improved efficiency when evaluating large datasets.
+
+        Args:
+            analyzer: The LLM analyzer instance to evaluate.
+            test_cases: List of labeled test cases with expected results.
+            prompt_version: Identifier for the prompt version being evaluated.
+            dataset_name: Name of the dataset for result tracking.
+
+        Returns:
+            EvaluationResult containing computed metrics and predictions.
+        """
         predictions = []
         
         # Process in batches

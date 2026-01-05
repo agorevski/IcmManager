@@ -50,12 +50,20 @@ class IssueAnalysis:
     raw_response: Optional[str] = None
 
     def __post_init__(self):
-        """Validate the analysis data."""
+        """Validate the analysis data.
+        
+        Raises:
+            ValueError: If confidence is not between 0.0 and 1.0.
+        """
         if not 0.0 <= self.confidence <= 1.0:
             raise ValueError(f"Confidence must be between 0.0 and 1.0, got {self.confidence}")
 
     def to_dict(self) -> dict:
-        """Convert the analysis to a dictionary representation."""
+        """Convert the analysis to a dictionary representation.
+        
+        Returns:
+            A dictionary containing all analysis fields.
+        """
         return {
             "is_issue": self.is_issue,
             "confidence": self.confidence,
@@ -69,7 +77,14 @@ class IssueAnalysis:
 
     @classmethod
     def from_dict(cls, data: dict) -> "IssueAnalysis":
-        """Create an IssueAnalysis from a dictionary."""
+        """Create an IssueAnalysis from a dictionary.
+        
+        Args:
+            data: Dictionary containing analysis fields.
+            
+        Returns:
+            A new IssueAnalysis instance populated from the dictionary.
+        """
         return cls(
             is_issue=data["is_issue"],
             confidence=data["confidence"],
@@ -83,7 +98,11 @@ class IssueAnalysis:
 
     @classmethod
     def no_issue(cls) -> "IssueAnalysis":
-        """Create an analysis indicating no issue was detected."""
+        """Create an analysis indicating no issue was detected.
+        
+        Returns:
+            An IssueAnalysis with is_issue=False and full confidence.
+        """
         return cls(
             is_issue=False,
             confidence=1.0,
@@ -145,7 +164,11 @@ class ICMIssue:
     source_post_id: Optional[str] = None
 
     def to_dict(self) -> dict:
-        """Convert the ICM issue to a dictionary representation."""
+        """Convert the ICM issue to a dictionary representation.
+        
+        Returns:
+            A dictionary containing all ICM issue fields.
+        """
         return {
             "id": self.id,
             "title": self.title,
@@ -161,7 +184,14 @@ class ICMIssue:
 
     @classmethod
     def from_dict(cls, data: dict) -> "ICMIssue":
-        """Create an ICMIssue from a dictionary."""
+        """Create an ICMIssue from a dictionary.
+        
+        Args:
+            data: Dictionary containing ICM issue fields.
+            
+        Returns:
+            A new ICMIssue instance populated from the dictionary.
+        """
         created_at = data.get("created_at")
         if isinstance(created_at, str):
             created_at = datetime.fromisoformat(created_at)
@@ -205,7 +235,11 @@ class AnalyzedPost:
     post_url: Optional[str] = None
 
     def to_dict(self) -> dict:
-        """Convert the analyzed post to a dictionary representation."""
+        """Convert the analyzed post to a dictionary representation.
+        
+        Returns:
+            A dictionary containing all analyzed post fields.
+        """
         return {
             "post_id": self.post_id,
             "subreddit": self.subreddit,
@@ -219,7 +253,14 @@ class AnalyzedPost:
 
     @classmethod
     def from_dict(cls, data: dict) -> "AnalyzedPost":
-        """Create an AnalyzedPost from a dictionary."""
+        """Create an AnalyzedPost from a dictionary.
+        
+        Args:
+            data: Dictionary containing analyzed post fields.
+            
+        Returns:
+            A new AnalyzedPost instance populated from the dictionary.
+        """
         analyzed_at = data.get("analyzed_at")
         if isinstance(analyzed_at, str):
             analyzed_at = datetime.fromisoformat(analyzed_at)
